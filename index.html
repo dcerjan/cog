@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Cog</title>
+
+    <link href='http://fonts.googleapis.com/css?family=Roboto+Slab:100,300,400,700' rel='stylesheet'>
+    <link href='http://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900' rel='stylesheet'>
+    <link href='http://fonts.googleapis.com/css?family=Oswald:300,400,700&subset=latin,latin-ext' rel='stylesheet'>
+
+    <!--link rel="shortcut icon" type="image/png" href="./assets/images/preloader/328_1.GIF"/-->
+    <link rel="stylesheet" href="dist/style.css">
+
+  </head>
+  <body>
+
+    <div id="main">
+      <canvas id="webgl">
+        Your browser doesn't appear to support the HTML5 <code>&lt;canvas&gt;</code> element.
+      </canvas>
+      <div id="overlay"></div>
+    </div>
+
+    <script src="http://localhost:35729/livereload.js"></script>
+    <script src="node_modules/jquery/dist/jquery.js"></script>
+    <script src="node_modules/requirejs/require.js"></script>
+    
+    <script>
+      require.config({
+        baseUrl: "./dist",
+        paths: {
+          "react":            "../node_modules/react/dist/react",
+          "regenerator":      "../node_modules/regenerator-babel/runtime"
+        },
+        packages: [
+          { name: "Cog", location: "./" }
+        ]
+      });
+      require( ["regenerator", "Cog"], function() {});
+
+
+      (function() {
+        window.addEventListener("resize", resizeThrottler, false);
+
+        var resizeTimeout;
+        function resizeThrottler() {
+          if(!resizeTimeout) {
+            resizeTimeout = setTimeout(function() {
+              resizeTimeout = null;
+              onResize();
+             }, 250);
+          }
+        }
+
+        function onResize() {
+          var canvas = window.document.getElementById("webgl");
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        }
+        onResize();
+      })();
+    </script>
+
+  </body>
+</html>

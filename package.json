@@ -1,0 +1,56 @@
+{
+  "name": "cog",
+  "version": "0.0.1",
+  "description": "webgl deferred rendering engine",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "npm install; grunt start",
+    "test": "mocha --compilers js:mocha-babel --recursive ./test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dcerjan/cog.git"
+  },
+  "dependencies": {
+    "node-uuid":                "*",
+    "express":                  "*",
+    "winston":                  "*",
+    "express-winston":          "*",
+    "body-parser":              "*",
+    "cookie-parser":            "*",
+    "react":                    "*",
+    "requirejs":                "*",
+    "jquery":                   "*"
+  },
+  "devDependencies": {
+    "grunt":                    "*",
+    "grunt-babel":              "*",
+    "grunt-eslint":             "*",
+    "eslint-plugin-react":      "*",
+    "grunt-contrib-watch":      "*",
+    "grunt-shell":              "*",
+    "grunt-contrib-sass":       "*",
+    "grunt-contrib-requirejs":  "*",
+    "socket.io":                "*",
+    "mocha":                    "*",
+    "mocha-babel":              "*",
+    "regenerator-babel":        "0.8.13-2",
+    "chai":                     "*"
+  },
+  "keywords": [
+    "webgl",
+    "deferred",
+    "es6",
+    "js",
+    "game",
+    "engine",
+    "3d",
+    "engine"
+  ],
+  "author": "Domagoj Cerjan <domagoj.cerjan@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dcerjan/cog/issues"
+  },
+  "homepage": "https://github.com/dcerjan/cog#readme"
+}
