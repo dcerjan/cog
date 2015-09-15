@@ -7,6 +7,13 @@ import gl from "./cog/gl";
 class MySceneOverlay extends React.Component {
   constructor(props) {
     super(props);
+
+    let loader = new Cog.Loader("http://localhost:8000/assets");
+    loader.load(
+      ["cube.cog", "deferred.frag", "surface.vert"], 
+      (name, _) => { console.log("Resource " + name + " loaded"); },
+      () => { this.props.scene.start(); }
+    );
   }
 
   render() {

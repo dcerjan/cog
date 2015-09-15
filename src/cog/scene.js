@@ -12,7 +12,6 @@ class Scene {
       );
     }
     this.setup();
-    this.start();
   }
 
   start() {

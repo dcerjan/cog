@@ -1,5 +1,8 @@
 import gl from "./gl";
+import Ajax from "./ajax";
+import Loader from "./loader";
 import Scene from "./scene";
+import Storage from "./storage";
 
 
 class Cog {
@@ -14,6 +17,9 @@ class Cog {
   }
 }
 
+Cog.Ajax = Ajax;
 Cog.Scene = Scene;
+Cog.Storage = Storage;
+Cog.Loader = Loader;
 
 export default Cog;
