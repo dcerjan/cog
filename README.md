@@ -2,11 +2,12 @@ Cog
 ================
 ## 1. Setup
 ```{r, engine='sh'}
-sudo apt-get install nodejs npm nginx # debian-based linux distros
+sudo apt-get install nodejs npm nginx ruby sass # debian-based linux distros
 # --- OR ---
-brew install node npm nginx # mac osx
+brew install node npm nginx ruby sass # mac osx
 
 git clone https://github.com/dcerjan/cog
+npm install -g grunt-cli
 cd cog
 npm install
 grunt start
