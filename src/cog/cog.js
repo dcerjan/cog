@@ -40,11 +40,17 @@ Cog.Engine.Surface = Surface;
 import * as MathUtils from "./math/util";
 import Vector2 from "./math/vector2";
 import Vector3 from "./math/vector3";
+import Matrix2 from "./math/matrix2";
+import Matrix3 from "./math/matrix3";
+import Matrix4 from "./math/matrix4";
 
 Cog.Math = {};
 Cog.Math.Util = MathUtils;
 Cog.Math.Vector2 = Vector2;
 Cog.Math.Vector3 = Vector3;
+Cog.Math.Matrix2 = Matrix2;
+Cog.Math.Matrix3 = Matrix3;
+Cog.Math.Matrix4 = Matrix4;
 
 /**********/
 /*  Util  */

@@ -212,15 +212,15 @@ class Shader {
 
     this.links["mat2"] = (name, value) => {
       if(!this.uniforms[name]) { throw new Error("Uniform '" + name + "' not present in shader '" + this.name + "'!"); }
-      gl.uniformMatrix2fv(this.uniforms[name], false, value);
+      gl.uniformMatrix2fv(this.uniforms[name], false, Float32Array(value));
     };
     this.links["mat3"] = (name, value) => {
       if(!this.uniforms[name]) { throw new Error("Uniform '" + name + "' not present in shader '" + this.name + "'!"); }
-      gl.uniformMatrix3fv(this.uniforms[name], false, value);
+      gl.uniformMatrix3fv(this.uniforms[name], false, Float32Array(value));
     };
     this.links["mat4"] = (name, value) => {
       if(!this.uniforms[name]) { throw new Error("Uniform '" + name + "' not present in shader '" + this.name + "'!"); }
-      gl.uniformMatrix4fv(this.uniforms[name], false, value);
+      gl.uniformMatrix4fv(this.uniforms[name], false, Float32Array(value));
     };
 
     this.links["sampler2D"] = (name, value) => {
