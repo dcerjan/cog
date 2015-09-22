@@ -1,7 +1,15 @@
 import gl from "../gl";
 
 class Buffer {
-  constructor(target, type) {
+  constructor(target, type, drawMethod) {
+
+    if(
+      target !== Buffer.Target.Array 
+      && target !== Buffer.Target.ElementArray
+    ) {
+      throw new Error("Buffer.constructor invalid Buffer.Target specified");
+    }
+
     if(
       type !== Buffer.Type.Static.Draw 
       && type !== Buffer.Type.Dynamic.Draw 
@@ -9,38 +17,47 @@ class Buffer {
     ) {
       throw new Error("Buffer.constructor invalid Buffer.Type specified");
     }
+
+    if( Object.keys(Buffer.DrawMethod).some(m => drawMethod === Buffer.DrawMethod[m]) ) {
+      throw new Error("Buffer.constructor invalid Buffer.DrawMethod specified");
+    }
+
     this.id = gl.createBuffer();
     this.type = type;
     this.target = target;
+    this.drawMethod = drawMethod;
     this.bound = false;
+
+    this.pointers = [];
   }
 
   data(data) {
-    if(this.bound) {
-      gl.bufferData(this.target, data, this.type);
-    } else {
-      throw new Error("Buffer.pointer cannot be called on un-bound buffer");
-    }
+    gl.bindBuffer(this.target, this.id);    
+    gl.bufferData(this.target, data, this.type);
+    gl.bindBuffer(this.target, null);
   }
 
   pointer(index, components, type, offset, stride) {
-    if(this.bound) {
+    this.pointers[index] = () => {
       gl.enableVertexAttribArray(index);
       gl.vertexAttribPointer(index, components, type, false, offset, stride);
-    } else {
-      throw new Error("Buffer.pointer cannot be called on un-bound buffer");
-    }
+    };
   }
 
   clear() {
-    if(this.bound) {
+    if(!this.bound) {
       gl.deleteBuffer(this.id);
     } else {
       throw new Error("Buffer.clear cannot be called while buffer is bound"); 
     }
   }
 
-  bind() { gl.bindBuffer(this.target, this.id); this.bound = true; }
+  bind() { 
+    gl.bindBuffer(this.target, this.id); 
+    this.bound = true; 
+    this.pointers.forEach( func => func() );
+  }
+
   unbind() { gl.bindBuffer(this.target, null); this.bound = false; }
 }
 
@@ -95,6 +112,16 @@ Buffer.DataType = {
   UnsignedByte:   gl.UNSIGNED_BYTE,
   UnsignedShort:  gl.UNSIGNED_SHORT,
   UnsignedInt:    gl.UNSIGNED_INT
+};
+
+Buffer.DrawMethod = {
+  Points:         gl.POINTS,
+  Lines:          gl.LINES,
+  LineStrip:      gl.LINE_STRIP,
+  LineLoop:       gl.LINE_LOOP,
+  Triangles:      gl.TRIANGLES,
+  TriangleStrip:  gl.TRIANGLE_STRIP,
+  TriangleFan:    gl.TRIANGLE_FAN
 };
 
 export default Buffer;

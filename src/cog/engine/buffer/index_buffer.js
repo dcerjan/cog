@@ -2,7 +2,7 @@ import Buffer from "./buffer";
 
 class IndexBuffer extends Buffer {
   constructor() {
-    super(Buffer.Target.ElementArray, Buffer.Type.Static.Draw);
+    super(Buffer.Target.ElementArray, Buffer.Type.Static.Draw, null);
   }
 
   data(data) {
@@ -15,6 +15,12 @@ class IndexBuffer extends Buffer {
       arrData = new Uint32Array(data);
     }
     super.data(arrData);
+  }
+
+  pointer() { throw new Exception("IndexBuffer.pointer not allowed to be called"); }
+
+  draw(primitive, vertices, datatype, offset) {
+    gl.drawElements(primitive, vertices, datatype, offset);
   }
 }
 

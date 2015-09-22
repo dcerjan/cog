@@ -21,6 +21,7 @@ import Buffer from "./engine/buffer/buffer";
 import DataBuffer from "./engine/buffer/buffer";
 import IndexBuffer from "./engine/buffer/buffer";
 import Shader from "./engine/shader/shader";
+import Surface from "./engine/surface/surface";
 
 Cog.Engine = {};
 Cog.Engine.Loader = Loader;
@@ -31,6 +32,7 @@ Cog.Engine.Buffer = Buffer;
 Cog.Engine.DataBuffer = Buffer;
 Cog.Engine.IndexBuffer = Buffer;
 Cog.Engine.Shader = Shader;
+Cog.Engine.Surface = Surface;
 
 /**********/
 /*  Math  */

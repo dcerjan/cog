@@ -60,7 +60,12 @@
         function onResize() {
           var canvas = window.document.getElementById("webgl");
           canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
+          canvas.height = window.innerWidth * 9.0 / 16.0;
+
+          if(window.gl) {
+            window.gl.viewportWidth = canvas.width;
+            window.gl.viewportHeight = canvas.height;
+          }
         }
         onResize();
       })();

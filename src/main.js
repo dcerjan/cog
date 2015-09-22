@@ -9,11 +9,15 @@ class MySceneOverlay extends React.Component {
 
     let loader = new Cog.Engine.Loader("http://localhost:8000/assets/shaders");
     loader.load(
-      ["raymarch/raymarch.frag", "raymarch/raymarch.vert"], 
+      ["blit/blit.frag", "blit/blit.vert"], 
       (name, _) => { console.log("Resource " + name + " loaded"); },
       () => { 
-        let shader = new Cog.Engine.Shader("raymarch example", loader.get("raymarch/raymarch.vert"), loader.get("raymarch/raymarch.frag"));
-        this.props.scene.store.set("raymarch example shader", shader);
+        let shader = new Cog.Engine.Shader("blit example", loader.get("blit/blit.vert"), loader.get("blit/blit.frag"));
+        this.props.scene.store.set("blit example shader", shader);
+        this.props.scene.shader = this.props.scene.store.get("blit example shader");
+        this.props.scene.surface = new Cog.Engine.Surface(-0.5, -0.5, 1.0, 1.0);
+        
+
         this.props.scene.start();
 
         console.log(this.props.scene);
@@ -52,6 +56,10 @@ class MyScene extends Cog.Engine.Scene {
   render() {
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    this.shader.bind();
+    this.surface.blit();
+    this.shader.unbind();
   }
 }
 
