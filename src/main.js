@@ -7,11 +7,17 @@ class MySceneOverlay extends React.Component {
   constructor(props) {
     super(props);
 
-    let loader = new Cog.Engine.Loader("http://localhost:8000/assets");
+    let loader = new Cog.Engine.Loader("http://localhost:8000/assets/shaders");
     loader.load(
-      ["cube.cog", "deferred.frag", "surface.vert"], 
+      ["raymarch/raymarch.frag", "raymarch/raymarch.vert"], 
       (name, _) => { console.log("Resource " + name + " loaded"); },
-      () => { this.props.scene.start(); }
+      () => { 
+        let shader = new Cog.Engine.Shader("raymarch example", loader.get("raymarch/raymarch.vert"), loader.get("raymarch/raymarch.frag"));
+        this.props.scene.store.set("raymarch example shader", shader);
+        this.props.scene.start();
+
+        console.log(this.props.scene);
+      }
     );
   }
 
@@ -31,6 +37,7 @@ class MySceneOverlay extends React.Component {
 class MyScene extends Cog.Engine.Scene {
   constructor() {
     super("my scene", MySceneOverlay);
+    this.store = new Cog.Util.Store();
   }
 
   setup() {

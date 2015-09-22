@@ -4,12 +4,12 @@
 /*  from: http://stackoverflow.com/questions/32633585/how-do-you-convert-to-half-floats-in-javascript  */
 /*******************************************************************************************************/
 
-let toHalf = ( () => {
+let ToHalf = ( () => {
   let 
     floatView = new Float32Array(1),
     int32View = new Int32Array(floatView.buffer);
 
-  return function toHalf( fval ) {
+  return function( fval ) {
     
     let
       fbits = int32View[0],
@@ -42,4 +42,4 @@ let toHalf = ( () => {
   };
 })();
 
-export default toHalf;
+export default ToHalf;

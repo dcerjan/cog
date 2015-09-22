@@ -35,7 +35,8 @@
     "mocha":                    "*",
     "mocha-babel":              "*",
     "regenerator-babel":        "0.8.13-2",
-    "chai":                     "*"
+    "chai":                     "*",
+    "grunt-concurrent":         "*"
   },
   "keywords": [
     "webgl",

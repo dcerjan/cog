@@ -1,6 +1,7 @@
 module.exports = function(grunt) {
   "use strict";
   
+  grunt.loadNpmTasks('grunt-concurrent');
   grunt.loadNpmTasks("grunt-babel");
   grunt.loadNpmTasks("grunt-eslint");
   grunt.loadNpmTasks("grunt-shell");
@@ -57,10 +58,19 @@ module.exports = function(grunt) {
 
     shell: {
       mocha: {
-        options: {
-          stdout: true
-        },
-        command: "mocha --compilers js:mocha-babel --harmony --recursive ./test"
+        command: "mocha --compilers js:mocha-babel --harmony --recursive ./test",
+        options: { stdout: true }
+      },
+      nginx: {
+        command: "mkdir -p ./tmp/nginx/logs;  nginx -p ./tmp/nginx -c ../../config/nginx.conf",
+        options: { stdout: true }
+      }
+    },
+
+    concurrent: {
+      start: { 
+        tasks: ["watch", "shell:nginx"],
+        options: { logConcurrentOutput: true }
       }
     },
 
@@ -97,5 +107,5 @@ module.exports = function(grunt) {
   });
   
   grunt.registerTask("test", ["shell:mocha"]);
-  grunt.registerTask("start", [ /*"babel",*/ "shell:start"]);
+  grunt.registerTask("start", ["babel", "concurrent"]);
 };

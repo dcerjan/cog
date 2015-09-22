@@ -30,8 +30,8 @@ class Loader {
     });
   }
 
-  get() {
-    return this.assets;
+  get(key) {
+    return this.assets[key];
   }
 }
 
