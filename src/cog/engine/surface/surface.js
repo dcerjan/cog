@@ -10,12 +10,13 @@ class Surface {
     this.indices = new IndexBuffer();
 
     this.data.data(new Float32Array([
-      this.rect.x,                this.rect.y,
-      this.rect.x,                this.rect.y + this.rect.h,
-      this.rect.x + this.rect.w,  this.rect.y,
-      this.rect.x + this.rect.w,  this.rect.y + this.rect.h
+      this.rect.x,                this.rect.y,               1.0, 0.0, 0.0, 1.0,
+      this.rect.x,                this.rect.y + this.rect.h, 0.0, 1.0, 0.0, 1.0,
+      this.rect.x + this.rect.w,  this.rect.y,               0.0, 0.0, 1.0, 1.0,
+      this.rect.x + this.rect.w,  this.rect.y + this.rect.h, 0.0, 0.0, 0.0, 1.0
     ]));
-    this.data.pointer(0, 2, Buffer.DataType.Float, 0, 0);
+    this.data.pointer(0, 2, Buffer.DataType.Float, 6 * 4, 0);
+    this.data.pointer(1, 4, Buffer.DataType.Float, 6 * 4, 2 * 4);
     this.indices.data([0, 1, 2, 3]);
   }
 
