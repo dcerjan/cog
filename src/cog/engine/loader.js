@@ -1,4 +1,4 @@
-import Ajax from "./ajax";
+import Ajax from "../util/ajax";
 
 class Loader {
   constructor(url) {

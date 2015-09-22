@@ -1,14 +1,13 @@
 import Cog from "./cog/cog";
 import React from "react";
 
-import gl from "./cog/gl";
-
+import gl from "./cog/engine/gl";
 
 class MySceneOverlay extends React.Component {
   constructor(props) {
     super(props);
 
-    let loader = new Cog.Loader("http://localhost:8000/assets");
+    let loader = new Cog.Engine.Loader("http://localhost:8000/assets");
     loader.load(
       ["cube.cog", "deferred.frag", "surface.vert"], 
       (name, _) => { console.log("Resource " + name + " loaded"); },
@@ -29,7 +28,7 @@ class MySceneOverlay extends React.Component {
 
 
 
-class MyScene extends Cog.Scene {
+class MyScene extends Cog.Engine.Scene {
   constructor() {
     super("my scene", MySceneOverlay);
   }

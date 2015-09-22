@@ -1,6 +1,20 @@
 let
   canvas = null,
+  exts = null,
   gl = null;
+
+
+let getExtensions = () => {
+  let
+    ext = gl.getSupportedExtensions();
+
+  console.info("Suported extensions: " + JSON.stringify(ext));
+
+  window.exts = exts = ext.map( (ext) => {
+    console.info("Loading WebGL Extension: " + ext);
+    return gl.getExtension(ext);
+  });
+};
 
 (() => {
   canvas = window.document.getElementById("webgl");
@@ -18,6 +32,9 @@ let
     canvas.addEventListener("webglcontextrestored", () => {
       console.log("context restored");
     }, false);
+
+    getExtensions();
+    window.gl = gl;
 
   } catch(error) {
   }
