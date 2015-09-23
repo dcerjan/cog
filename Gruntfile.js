@@ -62,7 +62,7 @@ module.exports = function(grunt) {
         options: { stdout: true }
       },
       nginx: {
-        command: "mkdir -p ./tmp/nginx/logs;  nginx -p ./tmp/nginx -c ../../config/nginx.conf",
+        command: "mkdir -p ./tmp/nginx/logs; PATH=$PATH:/usr/sbin nginx -p ./tmp/nginx -c ../../config/nginx.conf",
         options: { stdout: true }
       }
     },
