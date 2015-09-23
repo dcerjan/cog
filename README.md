@@ -14,6 +14,8 @@ cd cog
 npm install
 
 grunt start # spin up nginx @localhost:8000, start watch over scss && js files
+# --- OR ---
+grunt build # in case a separate web server is used, just build the project
 ```
 - Navigate to [http://localhost:8000](http://localhost:8000 "Cog @ localhost")
 
