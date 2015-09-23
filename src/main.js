@@ -7,7 +7,7 @@ class MySceneOverlay extends React.Component {
   constructor(props) {
     super(props);
 
-    let loader = new Cog.Engine.Loader("/assets/shaders");
+    let loader = new Cog.Engine.Loader("assets/shaders");
     loader.load(
       ["blit/blit.frag", "blit/blit.vert"], 
       (name, _) => { console.log("Resource " + name + " loaded"); },
