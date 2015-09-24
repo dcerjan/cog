@@ -43,6 +43,7 @@ import Vector3 from "./math/vector3";
 import Matrix2 from "./math/matrix2";
 import Matrix3 from "./math/matrix3";
 import Matrix4 from "./math/matrix4";
+import CatmullRomSpline2 from "./math/catmull_rom_spline2";
 
 Cog.Math = {};
 Cog.Math.Util = MathUtils;
@@ -51,6 +52,7 @@ Cog.Math.Vector3 = Vector3;
 Cog.Math.Matrix2 = Matrix2;
 Cog.Math.Matrix3 = Matrix3;
 Cog.Math.Matrix4 = Matrix4;
+Cog.Math.CatmullRomSpline2 = CatmullRomSpline2;
 
 /**********/
 /*  Util  */

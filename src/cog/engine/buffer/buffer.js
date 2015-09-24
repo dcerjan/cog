@@ -37,10 +37,10 @@ class Buffer {
     gl.bindBuffer(this.target, null);
   }
 
-  pointer(index, components, type, offset, stride) {
+  pointer(index, components, type, normalized, offset, stride) {
     this.pointers[index] = () => {
       gl.enableVertexAttribArray(index);
-      gl.vertexAttribPointer(index, components, type, false, offset, stride);
+      gl.vertexAttribPointer(index, components, type, normalized, offset, stride);
     };
   }
 
