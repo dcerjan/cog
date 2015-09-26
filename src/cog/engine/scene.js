@@ -11,10 +11,11 @@ class Scene {
         window.document.getElementById("overlay")
       );
     }
-    this.setup();
   }
 
   start() {
+    this.setup();
+    
     let everyTick = () => {
       requestAnimationFrame(everyTick);
       this.update();

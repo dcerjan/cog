@@ -133,6 +133,10 @@ class Shader {
     gl.attachShader(this.id, this.vid);
     gl.attachShader(this.id, this.fid);
 
+    ["vPosition", "vNormal", "vTangent", "vColor", "vTexCoord", "vTexCoordAlt", "vBoneIndex", "vBoneWeight"].forEach( (n, i) => {
+      gl.bindAttribLocation(this.id, i, n);
+    });
+
     gl.linkProgram(this.id);
     if(!gl.getProgramParameter(this.id, gl.LINK_STATUS)) {
       throw new Error("Could not link the shader program!");

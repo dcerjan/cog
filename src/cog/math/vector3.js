@@ -53,9 +53,9 @@ class Vector3 {
 
   cross(other) {
     return new Vector3(
-      other.y*this.z - other.z*this.y,
-      other.z*this.x - other.x*this.z,
-      other.x*this.y - other.y*this.x
+      this.y*other.z - this.z*other.y,
+      this.z*other.x - this.x*other.z,
+      this.x*other.y - this.y*other.x
     );
   }
 

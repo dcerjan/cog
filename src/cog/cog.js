@@ -22,6 +22,7 @@ import DataBuffer from "./engine/buffer/buffer";
 import IndexBuffer from "./engine/buffer/buffer";
 import Shader from "./engine/shader/shader";
 import Surface from "./engine/surface/surface";
+import Mesh from "./engine/mesh/mesh";
 
 Cog.Engine = {};
 Cog.Engine.Loader = Loader;
@@ -33,6 +34,7 @@ Cog.Engine.DataBuffer = Buffer;
 Cog.Engine.IndexBuffer = Buffer;
 Cog.Engine.Shader = Shader;
 Cog.Engine.Surface = Surface;
+Cog.Engine.Mesh = Mesh;
 
 /**********/
 /*  Math  */
@@ -40,19 +42,23 @@ Cog.Engine.Surface = Surface;
 import * as MathUtils from "./math/util";
 import Vector2 from "./math/vector2";
 import Vector3 from "./math/vector3";
+import Vector4 from "./math/vector4";
 import Matrix2 from "./math/matrix2";
 import Matrix3 from "./math/matrix3";
 import Matrix4 from "./math/matrix4";
 import CatmullRomSpline2 from "./math/catmull_rom_spline2";
+import CatmullRomSpline3 from "./math/catmull_rom_spline3";
 
 Cog.Math = {};
 Cog.Math.Util = MathUtils;
 Cog.Math.Vector2 = Vector2;
 Cog.Math.Vector3 = Vector3;
+Cog.Math.Vector4 = Vector4;
 Cog.Math.Matrix2 = Matrix2;
 Cog.Math.Matrix3 = Matrix3;
 Cog.Math.Matrix4 = Matrix4;
 Cog.Math.CatmullRomSpline2 = CatmullRomSpline2;
+Cog.Math.CatmullRomSpline3 = CatmullRomSpline3;
 
 /**********/
 /*  Util  */

@@ -1,27 +1,40 @@
 import gl from "../gl";
-import Buffer from "./buffer/buffer";
-import DataBuffer from "./buffer/index_buffer";
-import IndexBuffer from "./buffer/data_buffer";
+import Buffer from "../buffer/buffer";
+import IndexBuffer from "../buffer/index_buffer";
+import DataBuffer from "../buffer/data_buffer";
 import Vector3 from "../../math/vector3";
-import Vector4 from "../../math/vector4";
 
 class Vertex {
-  constructor() {
-    this.position = null;  // passed as a 3-component float attribute [0]
-    this.texCoord = null;  // passed as a 4-component uint16 attribute [1]
-    this.normal   = null;  // passed as a 3-component uint8 attribute [2]
-    this.tangent  = null;  // passed as a 3-component uint8 attribute [3]
-    //this.bones    = [];    // passed as a 4-component uint16 attribute [4] - 65536 bones
-    //this.weights  = [];    // passed as a 4-component uint8 attribute [5]
-    this.color    = null;  // passed as a 4-component uint8 attribute [6] 
+  constructor(
+    position    = null,
+    normal      = null,
+    tangent     = null,
+    color       = null,
+    texCoord    = null,
+    texCoordAlt = null,
+    bones       = [-1,-1,-1,-1],
+    weights     = [-1,-1,-1,-1]
+  ) {
+    // order of vertex attributes is always the same, attribute locations are always indexed acording to this order
+    this.position     = position;    //  16  // passed as a 3-component float attribute  [0] - 32 bits per channel; one 32 bit padding value (1.0)
+    this.normal       = normal;      //   4  // passed as a 3-component uint8 attribute  [1] - 24 bits with 8 bit padding value (128 normalized to 0.5)
+    this.tangent      = tangent;     //   4  // passed as a 3-component uint8 attribute  [2] - 24 bits with 8 bit padding value (128 normalized to 0.5)
+    this.color        = color;       //   4  // passed as a 4-component uint8 attribute  [3] - 8 bits per channel
+    this.texCoord     = texCoord;    //   8  // passed as a 4-component uint16 attribute [4] - 16 bits per coordinate gives us 65536x65536 resolution - more than enough
+    this.texCoordAlt  = texCoordAlt; //   8  // passed as a 4-component uint16 attribute [5] - 16 bits per coordinate gives us 65536x65536 resolution - more than enough
+    this.bones        = bones;       //   4  // passed as a 4-component uint8 attribute  [6] - 255 bones; grown human body has 206 bones, so this will suffice
+    this.weights      = weights;     //   4  // passed as a 4-component uint8 attribute  [7] - weights should add up to 1.0
+    // ======================  Total //  52  bytes of data per vertex packed in a single buffer
   }
 
   equal(other) {
     return (
       this.position.equal(other.position)
-      && this.texCoord.equal(other.texCoord)
       && this.normal.equal(other.normal)
       && this.tangent.equal(other.tangent)
+      && this.color.equal(other.color)
+      && this.texCoord.equal(other.texCoord)
+      && this.texCoordAlt.equal(other.texCoordAlt)
       && this.bones.every( (val, i) => other.bones[i] === val )
       && this.weights.every( (val, i) => other.weights[i] === val )
     );
@@ -29,23 +42,31 @@ class Vertex {
 }
 
 class Polygon {
-  constructor() {
-    this.indices = [0, 0, 0];
-    this.normal  = new Vector3();
-    this.tangent = new Vector3();
+  constructor(
+    indices = [],
+    normal  = null,
+    tangent = null
+  ) {
+    this.indices = indices;
+    this.normal  = normal;
+    this.tangent = tangent;
   }
 }
 
 class Mesh {
   constructor(meshType) {
-    if(meshType !== Mesh.Type.Static || meshType !== Mesh.Type.Dynamic || meshType !== Mesh.Type.Stream) {
+    if(meshType !== Mesh.Type.Static && meshType !== Mesh.Type.Dynamic && meshType !== Mesh.Type.Stream) {
       throw new Error("Mesh.constructor argument meshType must be something of [Mesh.Type.Static, Mesh.Type.Dynamic, Mesh.Type.Stream]");
     }
 
+    this.armature = true;
+
+    if(meshType === meshType.Static) {
+      this.armature = false;
+    }
+
     this.meshType = meshType;
-    this.dataFp32 = new DataBuffer(this.meshType);
-    this.dataUint8 = new DataBuffer(this.meshType);
-    this.dataUint16 = new DataBuffer(this.meshType);
+    this.data = new DataBuffer(meshType);
     this.indices = new IndexBuffer();
 
     this.vertices = [];
@@ -61,8 +82,8 @@ class Mesh {
       this.polygons.forEach( (p) => {
         if(p.indices.some(index => index === i)) {
           // calculate normal for this polygon
-          v0 = this.vertices[p.indices[1]].sub(this.vertices[p.indices[0]]);
-          v1 = this.vertices[p.indices[2]].sub(this.vertices[p.indices[0]]);
+          v0 = this.vertices[p.indices[1]].position.sub(this.vertices[p.indices[0]].position);
+          v1 = this.vertices[p.indices[2]].position.sub(this.vertices[p.indices[0]].position);
           p.normal = v0.cross(v1).normalize();
           // accumulate normal vector at that vertex
           v.normal = v.normal.add(p.normal);
@@ -121,70 +142,161 @@ class Mesh {
 
   compile() {
     let
-      texcoords = this.vertices.every(v => !!v.texCoord),
-      normals   = this.vertices.every(v => !!v.normal),
-      tangents  = this.vertices.every(v => !!v.tangent),
-      colors    = this.vertices.every(v => !!v.color);
-      //bones     = this.vertices.every(v => v.bones.length > 0),
-      //weights   = this.vertices.every(v => v.weights.length > 0);
+      arrayBuffer   = null,
+      normals       = this.vertices.every(v => !!v.normal),
+      tangents      = this.vertices.every(v => !!v.tangent),
+      colors        = this.vertices.every(v => !!v.color),
+      texCoords     = this.vertices.every(v => !!v.texCoord),
+      texCoordsAlt  = this.vertices.every(v => !!v.texCoordAlt),
+      bones         = this.armature && this.vertices.every(v => v.bones.length === 4 && v.bones.every( b => b !== -1)),
+      weights       = this.armature && this.vertices.every(v => v.weights.length === 4 && v.weights.every( w => w !== -1)),
+      armature      = this.armature && bones && weights,
+
+      bytesPerVertex = 16; // position is the only required attribute
+
+    // determine total byte buffer length
+    normals      && (bytesPerVertex += 4);
+    tangents     && (bytesPerVertex += 4);
+    colors       && (bytesPerVertex += 4);
+    texCoords    && (bytesPerVertex += 8);
+    texCoordsAlt && (bytesPerVertex += 8);
+    armature     && (bytesPerVertex += 8);
 
 
-    this.dataFp32.bind();
-    this.dataFp32.data(
-      new Float32Array(this.vertices.reduce( (memo, v) => {
-        memo.push(v.position.x, v.position.y, v.position.z);
-      }, []))
-    );
-    this.dataFp32.pointer(0, 3, Buffer.DataType.Float, false, 0, 0);
-    this.dataFp32.unbind();
+    arrayBuffer = new ArrayBuffer(bytesPerVertex * this.vertices.length);
 
-    this.dataUint16.bind();
-    this.dataUint16.data(
-      new Uint16Array(this.vertices.reduce( (memo, v) => {
-        texcoords && memo.push(v.texCoord.x, v.texCoord.y, v.texCoord.z, v.texCoord.w);
-        //bones     && memo.push(...v.bones);
-      }, []))
-    );
-    this.dataUint16.pointer(1, 4, Buffer.DataType.UnsignedShort, true, 0, 0);
-    //this.dataUint16.pointer(5, 4, Buffer.DataType.UnsignedShort, false, 8 + 8, 8);
-    this.dataUint16.unbind();
+    let
+      float32View = new Float32Array(arrayBuffer),
+      uint16View  = new Uint16Array(arrayBuffer),
+      uint8View   = new Uint8Array(arrayBuffer),
+      bufferOffset;
 
-    this.dataUint8.bind();
-    this.dataUint8.data(
-      new Uint8Array(this.vertices.reduce( (memo, v) => {
-        normals   && memo.push(v.normal.x * 0.5 + 0.5, v.normal.y * 0.5 + 0.5, v.normal.z * 0.5 + 0.5);
-        tangents  && memo.push(v.tangent.x * 0.5 + 0.5, v.tangent.y * 0.5 + 0.5, v.tangent.z * 0.5 + 0.5);
-        colors    && memo.push(v.color.x, v.color.y, v.color.z, v.color.w);
-        //weights   && memo.push(...v.weights);
-      }, []))
-    );
-    this.dataUint8.pointer(2, 3, Buffer.DataType.UnsignedByte,  true, 10, 0);
-    this.dataUint8.pointer(3, 3, Buffer.DataType.UnsignedByte,  true, 10, 3);
-    this.dataUint8.pointer(4, 4, Buffer.DataType.UnsignedByte, false, 10, 6);
-    //this.dataUint8.pointer(6, 4, Buffer.DataType.Float, true, 10 + 4, 10);
-    this.dataUint8.unbind();
+    this.vertices.forEach( (v, i) => {
+      bufferOffset = 0;
+
+      // store positions as floats to arrayBuffer
+      float32View[i * (bytesPerVertex / 4) + (bufferOffset / 4) + 0] = v.position.x;
+      float32View[i * (bytesPerVertex / 4) + (bufferOffset / 4) + 1] = v.position.y;
+      float32View[i * (bytesPerVertex / 4) + (bufferOffset / 4) + 2] = v.position.z || 0.0;
+      float32View[i * (bytesPerVertex / 4) + (bufferOffset / 4) + 3] = v.position.w || 1.0;
+      bufferOffset += 16;
+
+      // store normals as normalized uint8 components
+      if(normals) {
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 0] = (v.normal.x * 0.5 + 0.5) * 255;
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 1] = (v.normal.y * 0.5 + 0.5) * 255;
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 2] = (v.normal.z * 0.5 + 0.5) * 255;
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 3] = 255;
+        bufferOffset += 4;
+      }
+
+      // store tangents as normalized uint8 components
+      if(tangents) {
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 0] = (v.tangents.x * 0.5 + 0.5) * 255;
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 1] = (v.tangents.y * 0.5 + 0.5) * 255;
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 2] = (v.tangents.z * 0.5 + 0.5) * 255;
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 3] = 255;
+        bufferOffset += 4;
+      }
+
+      // store colors as uint8 components
+      if(colors) {
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 0] = v.color.x * 255;
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 1] = v.color.y * 255;
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 2] = v.color.z * 255;
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 3] = v.color.w * 255;
+        bufferOffset += 4;
+      }
+
+      // store texCoord as normalized uint16 components
+      if(texCoords) {
+        uint16View[i * (bytesPerVertex / 2) + (bufferOffset / 2) + 0] = v.texCoord.x * 65535;
+        uint16View[i * (bytesPerVertex / 2) + (bufferOffset / 2) + 1] = v.texCoord.y * 65535;
+        uint16View[i * (bytesPerVertex / 2) + (bufferOffset / 2) + 2] = v.texCoord.z * 65535;
+        uint16View[i * (bytesPerVertex / 2) + (bufferOffset / 2) + 3] = v.texCoord.w * 65535;
+        bufferOffset += 8;
+      }
+
+      // store texCoordAlt as normalized uint16 components
+      if(texCoordsAlt) {
+        uint16View[i * (bytesPerVertex / 2) + (bufferOffset / 2) + 0] = v.texCoordAlt.x * 65535;
+        uint16View[i * (bytesPerVertex / 2) + (bufferOffset / 2) + 1] = v.texCoordAlt.y * 65535;
+        uint16View[i * (bytesPerVertex / 2) + (bufferOffset / 2) + 2] = v.texCoordAlt.z * 65535;
+        uint16View[i * (bytesPerVertex / 2) + (bufferOffset / 2) + 3] = v.texCoordAlt.w * 65535;
+        bufferOffset += 8;
+      }
+
+      // store bone indices as uint8 components
+      // store bone weights as normalized uint8 components
+      if(armature && bones && weights) {
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 0] = v.bones.x;
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 1] = v.bones.y;
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 2] = v.bones.z;
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 3] = v.bones.w;
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 4] = v.weights.x * 255;
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 5] = v.weights.y * 255;
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 6] = v.weights.z * 255;
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 7] = v.weights.w * 255;
+      }
+    });
+
+    this.data.bind();
+    this.data.data(arrayBuffer);
+    bufferOffset = 0;
+    this.data.pointer(0, 4, Buffer.DataType.Float, false, bytesPerVertex, bufferOffset);
+    bufferOffset += 16;
+
+    if(normals) {
+      this.data.pointer(1, 4, Buffer.DataType.UnsignedByte, true, bytesPerVertex, bufferOffset);
+      bufferOffset += 4 ;
+    }
+
+    if(tangents) {
+      this.data.pointer(2, 4, Buffer.DataType.UnsignedByte, true, bytesPerVertex, bufferOffset);
+      bufferOffset += 4;
+    }
+    
+    if(colors) {
+      this.data.pointer(3, 4, Buffer.DataType.UnsignedByte, true, bytesPerVertex, bufferOffset);
+      bufferOffset += 4;
+    }
+
+    if(texCoords) {
+      this.data.pointer(4, 4, Buffer.DataType.UnsignedShort, true, bytesPerVertex, bufferOffset);
+      bufferOffset += 16;
+    }
+
+    if(texCoordsAlt) {
+      this.data.pointer(5, 4, Buffer.DataType.UnsignedShort, true, bytesPerVertex, bufferOffset);
+      bufferOffset += 16;  
+    }
+    
+    if(armature && bones && weights) {
+      this.data.pointer(6, 4, Buffer.DataType.UnsignedByte, false, bytesPerVertex, bufferOffset);
+      bufferOffset += 4;
+      this.data.pointer(7, 4, Buffer.DataType.UnsignedByte, true, bytesPerVertex, bufferOffset);
+    }
+
+    this.data.unbind();
 
     this.indices.bind();
     this.indices.data(
       this.polygons.reduce( (memo, p) => {
         memo.push(...p.indices);
+        return memo;
       }, [])
     );
     this.indices.unbind();
   }
 
   draw() {
-    this.dataFp32.bind();
-    this.dataUint16.bind();
-    this.dataUint8.bind();
-
+    this.data.bind();
     this.indices.bind();
-    this.indices.draw(Buffer.DrawMethod.Triangles, this.vertices.length, 0);
-    this.indices.unbind();
 
-    this.dataFp32.unbind();
-    this.dataUint16.unbind();
-    this.dataUint8.unbind();
+    this.indices.draw(Buffer.DrawMethod.Triangles, this.polygons.length * 3, 0);
+
+    this.indices.unbind();
+    this.data.unbind();
   }
 
   cleanup() {
@@ -201,4 +313,7 @@ Mesh.Type = {
   Stream:   Buffer.Type.Stream.Draw
 };
 
-export {Vertex, Polygon, Mesh};
+Mesh.Vertex = Vertex;
+Mesh.Polygon = Polygon;
+
+export default Mesh;

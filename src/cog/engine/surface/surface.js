@@ -1,38 +1,55 @@
-import Buffer from "../buffer/buffer";
-import DataBuffer from "../buffer/data_buffer";
-import IndexBuffer from "../buffer/index_buffer";
+import Mesh from "../mesh/mesh";
+import Vector2 from "../../math/vector2";
+import Vector4 from "../../math/vector4";
 
 class Surface {
 
-  constructor(xpos, ypos, width, height) {
-    this.rect = {x: xpos || -1.0, y: ypos || -1.0, w: width || 2.0, h: height || 2.0};
-    this.data = new DataBuffer(Buffer.Type.Static.Draw);
-    this.indices = new IndexBuffer();
+  constructor(xpos = 0.0, ypos = 0.0, width = 1.0, height = 1.0) {
+    this.rect = {
+      x: xpos,
+      y: ypos,
+      w: width,
+      h: height
+    };
+    
+    this.mesh = new Mesh(Mesh.Type.Static);
 
-    this.data.data(new Float32Array([
-      this.rect.x,                this.rect.y,               1.0, 0.0, 0.0, 1.0,
-      this.rect.x,                this.rect.y + this.rect.h, 0.0, 1.0, 0.0, 1.0,
-      this.rect.x + this.rect.w,  this.rect.y,               0.0, 0.0, 1.0, 1.0,
-      this.rect.x + this.rect.w,  this.rect.y + this.rect.h, 0.0, 0.0, 0.0, 1.0
-    ]));
-    this.data.pointer(0, 2, Buffer.DataType.Float, false, 6 * 4, 0);
-    this.data.pointer(1, 4, Buffer.DataType.Float, false, 6 * 4, 2 * 4);
-    this.indices.data([0, 1, 2, 3]);
+    this.mesh.vertices.push(
+      new Mesh.Vertex(
+        new Vector2(-1.0 + 2.0 * this.rect.x, 1.0 - 2.0 * this.rect.y), 
+        null, null, null, new Vector4(0.0, 0.0, 0.0, 0.0)
+      ),
+      
+      new Mesh.Vertex(
+        new Vector2(-1.0 + 2.0 * (this.rect.x + this.rect.w), 1.0 - 2.0 * this.rect.y), 
+        null, null, null, new Vector4(1.0, 0.0, 1.0, 0.0)
+      ),
+      
+      new Mesh.Vertex(
+        new Vector2(-1.0 + 2.0 * (this.rect.x + this.rect.w), 1.0 - 2.0 * (this.rect.y + this.rect.h)), 
+        null, null, null, new Vector4(1.0, 1.0, 1.0, 1.0)
+      ),
+      
+      new Mesh.Vertex(
+        new Vector2(-1.0 + 2.0 * this.rect.x, 1.0 - 2.0 * (this.rect.y + this.rect.h)),
+        null, null, null, new Vector4(0.0, 1.0, 0.0, 1.0)
+      )
+    );
+
+    this.mesh.polygons.push(
+      new Mesh.Polygon([0, 1, 2]),
+      new Mesh.Polygon([0, 2, 3])
+    );
+
+    this.mesh.compile();
   }
 
   blit() {
-    this.data.bind();
-    this.indices.bind();
-
-    this.indices.draw(Buffer.DrawMethod.TriangleStrip, 4, Buffer.DataType.UnsignedByte, 0);
-
-    this.indices.unbind();
-    this.data.unbind();
+    this.mesh.draw();
   }
 
   clear() {
-    this.data.clear();
-    this.indices.clear();
+    this.mesh.clear();
   }
 }
 
