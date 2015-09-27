@@ -122,7 +122,7 @@ class Mesh {
       accum.y = f * (deltaV2 * e1.y - deltaV1 * e2.y);
       accum.z = f * (deltaV2 * e1.z - deltaV1 * e2.z);
       
-      this.polygons[i].tangent = Vector3Normalized(accum);
+      this.polygons[i].tangent = accum.normalize();
     });
 
     // for each vertex index
@@ -192,9 +192,9 @@ class Mesh {
 
       // store tangents as normalized uint8 components
       if(tangents) {
-        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 0] = (v.tangents.x * 0.5 + 0.5) * 255;
-        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 1] = (v.tangents.y * 0.5 + 0.5) * 255;
-        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 2] = (v.tangents.z * 0.5 + 0.5) * 255;
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 0] = (v.tangent.x * 0.5 + 0.5) * 255;
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 1] = (v.tangent.y * 0.5 + 0.5) * 255;
+        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 2] = (v.tangent.z * 0.5 + 0.5) * 255;
         uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 3] = 255;
         bufferOffset += 4;
       }
@@ -299,11 +299,11 @@ class Mesh {
     this.data.unbind();
   }
 
-  cleanup() {
-    this.dataFp32.cleanup();
-    this.dataUint16.cleanup();
-    this.dataUint8.cleanup();
-    this.indices.cleanup();
+  delete() {
+    this.dataFp32.delete();
+    this.dataUint16.delete();
+    this.dataUint8.delete();
+    this.indices.delete();
   }
 }
 

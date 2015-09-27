@@ -144,6 +144,11 @@ class Shader {
       console.info("Shader '" + name + "'' succesfully compiled and linked");
     }
 
+    // safe to delete shaders since they are no longer needed
+    // after linking, compiled shaders are stored under a program
+    gl.deleteShader(this.vid);
+    gl.deleteShader(this.fd);
+
     this.uniforms = {};
     this.vertexUniforms = parseUniforms(removeComments(vertexSource));
     this.fragmentUniforms = parseUniforms(removeComments(fragmentSource));
@@ -255,6 +260,10 @@ class Shader {
 
   attributes() {
     return this.attributes;
+  }
+
+  delete() {
+    gl.deleteProgram(this.id);
   }
 }
 

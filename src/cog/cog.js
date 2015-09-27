@@ -23,6 +23,8 @@ import IndexBuffer from "./engine/buffer/buffer";
 import Shader from "./engine/shader/shader";
 import Surface from "./engine/surface/surface";
 import Mesh from "./engine/mesh/mesh";
+import Material from "./engine/material/material";
+import FrameBuffer from "./engine/framebuffer/framebuffer";
 
 Cog.Engine = {};
 Cog.Engine.Loader = Loader;
@@ -35,6 +37,9 @@ Cog.Engine.IndexBuffer = Buffer;
 Cog.Engine.Shader = Shader;
 Cog.Engine.Surface = Surface;
 Cog.Engine.Mesh = Mesh;
+Cog.Engine.Material = Material;
+Cog.Engine.FrameBuffer = FrameBuffer;
+
 
 /**********/
 /*  Math  */

@@ -14,6 +14,8 @@ let getExtensions = () => {
     console.info("Loading WebGL Extension: " + ext);
     return gl.getExtension(ext);
   });
+
+  gl.extensions = ext;
 };
 
 (() => {

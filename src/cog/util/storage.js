@@ -11,8 +11,8 @@ let Db = {
     windwo.localStorage.removeItem(key);
   },
 
-  clear: () => {
-    window.localStorage.clear();
+  delete: () => {
+    window.localStorage.delete();
   }
 };
 

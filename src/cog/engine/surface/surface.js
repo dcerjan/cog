@@ -48,8 +48,8 @@ class Surface {
     this.mesh.draw();
   }
 
-  clear() {
-    this.mesh.clear();
+  delete() {
+    this.mesh.delete();
   }
 }
 

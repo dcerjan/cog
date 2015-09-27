@@ -44,11 +44,11 @@ class Buffer {
     };
   }
 
-  clear() {
+  delete() {
     if(!this.bound) {
       gl.deleteBuffer(this.id);
     } else {
-      throw new Error("Buffer.clear cannot be called while buffer is bound"); 
+      throw new Error("Buffer.delete cannot be called while buffer is bound"); 
     }
   }
 
