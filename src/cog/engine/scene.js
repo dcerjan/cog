@@ -19,25 +19,28 @@ class Scene {
 
     let 
       oldTs, 
-      newTs, 
-      frames = [0, 0, 0, 0, 0];
+      newTs,
+      milis,
+      t0, t1, dt;
 
     oldTs = newTs = Date.now();
 
     let everyTick = () => {
       requestAnimationFrame(everyTick);
+
+      t0 = window.performance.now();
       this.update();
       this.render();
-      
+      t1 = window.performance.now();
+      dt = t1 - t0;
+      dt = (dt > 0 ? dt.toFixed(4) : "0.0000");
+
       oldTs = newTs;
       newTs = Date.now();
-      
-      frames = frames.slice(1);
-      frames.push(newTs - oldTs);
 
-      let milis = frames.reduce( (m, f) => { m += f; return m; }, 0) * 0.2;
+      milis = newTs - oldTs;
 
-      publish("fps/update", (1000.0 / milis).toFixed(2), milis.toFixed(1));
+      publish("fps/update", (1000.0 / milis).toFixed(2), milis.toFixed(1), dt);
 
     };
     everyTick();

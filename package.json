@@ -20,7 +20,8 @@
     "cookie-parser":            "*",
     "react":                    "*",
     "requirejs":                "*",
-    "jquery":                   "*"
+    "chart.js":                 "*"
+
   },
   "devDependencies": {
     "grunt":                    "*",

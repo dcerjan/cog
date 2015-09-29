@@ -1,37 +1,50 @@
 import Cog from "./cog/cog";
 import React from "react";
+import Chart from "chart";
 
 import gl from "./cog/engine/gl";
 
 
-class FpsCounter extends React.Component {
+class Stats extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {fps: 0.0};
+    this.state = {
+      timeline: [[0.0, 0.0, 0.0]],
+      fps: 0.0, 
+      milis: 0.0, 
+      milisPerFrame: 0.0
+    };
 
-    this.updateFpsCounter = (fps, milis) => {
-      this.setState({fps, milis});
+    this.updateStats = (fps, milis, milisPerFrame) => {
+      this.setState({fps, milis, milisPerFrame});
     };
   }
 
   componentDidMount() {
-    Cog.Core.subscribe("fps/update", this.updateFpsCounter);
+    Cog.Core.subscribe("fps/update", this.updateStats);
   }
 
   componentWillUnmount() {
-    Cog.Core.unsubscribe("fps/update", this.updateFpsCounter);
+    Cog.Core.unsubscribe("fps/update", this.updateStats);
   }
 
   render() {
     return (
-      <div className="fps-counter">
-        <span className="fps-label">{this.state.fps + " fps"}</span>
-        <span className="fps-label">{this.state.milis + "ms"}</span>
+      <div className="stats-container">
+        <div className="stats-legend">
+          <span className="stats-label">{this.state.fps + " fps"}</span>
+          <span className="stats-label">{this.state.milis + "ms"}</span>
+          <span className="stats-label">{this.state.milisPerFrame + "ms"}</span>
+        </div>
+        <div className="stats-graph">
+        </div>
       </div>
     );
   }
 }
+
+
 
 class MySceneOverlay extends React.Component {
   constructor(props) {
@@ -54,7 +67,7 @@ class MySceneOverlay extends React.Component {
   render() {
     return (
       <div>
-        <FpsCounter/>
+        <Stats/>
 
         <span>
           {this.props.scene.name}
@@ -113,7 +126,10 @@ class MyScene extends Cog.Engine.Scene {
     // framebuffer textures here have no mipmaps generated and
     // filtering set to gl.NEAREST
     // https://www.khronos.org/webgl/wiki/WebGL_and_OpenGL_Differences
-    this.fbo = new Cog.Engine.FrameBuffer(16, 9);
+
+    let resolution = [2880, 1800], scale = 0.5;
+
+    this.fbo = new Cog.Engine.FrameBuffer(resolution[0] * scale, resolution[1] * scale);
     this.fbo.addRenderTarget(0);
 
     gl.clearColor(0.7, 0.7, 0.7, 1.0);
@@ -122,12 +138,11 @@ class MyScene extends Cog.Engine.Scene {
     console.log(this);
   }
 
-  update() {
+  update(dt) {
 
   }
 
   render() {
-    
     this.fbo.begin();
     this.bake.bind();
     this.surface.blit();

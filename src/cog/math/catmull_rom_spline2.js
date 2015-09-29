@@ -93,8 +93,8 @@ class CatmullRomSpline2 {
         // protect from extrapolation float error
         if(t > 1.0) t = 1.0;
         nv = _evalSegmentPosition2(this, t, i);
-        tmp = Vector2Sub(nv, ov);
-        len += Vector2Len(tmp);
+        tmp = nv.sub(ov);
+        len += tmp.length();
         ov = nv;
       } 
       this.arcs.push(len);

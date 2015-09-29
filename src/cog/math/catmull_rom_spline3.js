@@ -100,8 +100,8 @@ class CatmullRomSpline3 {
         // protect from extrapolation float error
         if(t > 1.0) t = 1.0;
         nv = _evalSegmentPosition3(this, t, i);
-        tmp = Vector3Sub(nv, ov);
-        len += Vector3Len(tmp);
+        tmp = nv.sub(ov);
+        len += tmp.length();
         ov = nv;
       } 
       this.arcs.push(len);
