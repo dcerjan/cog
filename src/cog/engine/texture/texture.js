@@ -4,7 +4,7 @@ import gl from "../gl";
 class Texture {
   constructor(name) {
     this.name = name;
-    this.id = gl.createTexture();
+    this.id = gl.createTexture(); gl.inc();
     this.image = null;
 
     this.internalFormat = gl.RGBA;
@@ -18,7 +18,7 @@ class Texture {
   generateMipmaps() {
     if(this.image) {
       this.bind();
-      gl.generateMipmap();
+      gl.generateMipmap(); gl.inc();
       this.unbind();
     } else {
       throw new Error("Texture.generateMipmaps() cannot be called on texture with no texture data!");
@@ -56,12 +56,12 @@ class Texture2D extends Texture {
 
   image(image, imageFormat) {
     super.image(image, imageFormat, () => {
-      gl.texImage2D(gl.TEXTURE_2D, 0, this.internalFormat, this.imageFormat, this.formatType, image.bytes());
+      gl.texImage2D(gl.TEXTURE_2D, 0, this.internalFormat, this.imageFormat, this.formatType, image.bytes()); gl.inc();
     });
   }
 
-  bind() { gl.bindTexture(gl.TEXTURE_2D, gl.id); }
-  unbind() { gl.bindTexture(gl.TEXTURE_2D, null); }
+  bind() { gl.bindTexture(gl.TEXTURE_2D, gl.id); gl.inc();}
+  unbind() { gl.bindTexture(gl.TEXTURE_2D, null); gl.inc();}
 }
 
 class TextureCube extends Texture {
@@ -71,17 +71,17 @@ class TextureCube extends Texture {
 
   image(images, imageFormat) {
     super.image(image, imageFormat, () => {
-      gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, this.internalFormat, this.imageFormat, this.formatType, images[0].bytes());
-      gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, this.internalFormat, this.imageFormat, this.formatType, images[1].bytes());
-      gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, this.internalFormat, this.imageFormat, this.formatType, images[2].bytes());
-      gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, this.internalFormat, this.imageFormat, this.formatType, images[3].bytes());
-      gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, this.internalFormat, this.imageFormat, this.formatType, images[4].bytes());
-      gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, this.internalFormat, this.imageFormat, this.formatType, images[5].bytes());
+      gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, this.internalFormat, this.imageFormat, this.formatType, images[0].bytes()); gl.inc();
+      gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, this.internalFormat, this.imageFormat, this.formatType, images[1].bytes()); gl.inc();
+      gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, this.internalFormat, this.imageFormat, this.formatType, images[2].bytes()); gl.inc();
+      gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, this.internalFormat, this.imageFormat, this.formatType, images[3].bytes()); gl.inc();
+      gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, this.internalFormat, this.imageFormat, this.formatType, images[4].bytes()); gl.inc();
+      gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, this.internalFormat, this.imageFormat, this.formatType, images[5].bytes()); gl.inc();
     });
   }
 
-  bind() { gl.bindTexture(gl.TEXTURE_CUBE_MAP, gl.id); }
-  unbind() { gl.bindTexture(gl.TEXTURE_CUBE_MAP, null); }
+  bind() { gl.bindTexture(gl.TEXTURE_CUBE_MAP, gl.id); gl.inc(); }
+  unbind() { gl.bindTexture(gl.TEXTURE_CUBE_MAP, null); gl.inc(); }
 }
 
 export {Texture2D, TextureCube};

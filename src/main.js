@@ -13,11 +13,12 @@ class Stats extends React.Component {
       timeline: [[0.0, 0.0, 0.0]],
       fps: 0.0, 
       milis: 0.0, 
-      milisPerFrame: 0.0
+      milisPerFrame: 0.0,
+      calls: 0
     };
 
-    this.updateStats = (fps, milis, milisPerFrame) => {
-      this.setState({fps, milis, milisPerFrame});
+    this.updateStats = (fps, milis, milisPerFrame, calls) => {
+      this.setState({fps, milis, milisPerFrame, calls});
     };
   }
 
@@ -36,6 +37,7 @@ class Stats extends React.Component {
           <span className="stats-label">{this.state.fps + " fps"}</span>
           <span className="stats-label">{this.state.milis + "ms"}</span>
           <span className="stats-label">{this.state.milisPerFrame + "ms"}</span>
+          <span className="stats-label">{"WebGL calls: " + this.state.calls}</span>
         </div>
         <div className="stats-graph">
         </div>
@@ -132,8 +134,8 @@ class MyScene extends Cog.Engine.Scene {
     this.fbo = new Cog.Engine.FrameBuffer(resolution[0] * scale, resolution[1] * scale);
     this.fbo.addRenderTarget(0);
 
-    gl.clearColor(0.7, 0.7, 0.7, 1.0);
-    gl.enable(gl.DEPTH_TEST);
+    gl.clearColor(0.7, 0.7, 0.7, 1.0); gl.inc();
+    gl.enable(gl.DEPTH_TEST); gl.inc();
 
     console.log(this);
   }
@@ -148,18 +150,16 @@ class MyScene extends Cog.Engine.Scene {
     this.surface.blit();
     this.fbo.end();
 
-    gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight); gl.inc();
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); gl.inc();
     this.shader.bind();
 
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, this.fbo.renderTarget[0].id);
+    gl.activeTexture(gl.TEXTURE0); gl.inc();
+    gl.bindTexture(gl.TEXTURE_2D, this.fbo.renderTarget[0].id); gl.inc();
     this.shader.links.sampler2D("fTexChannel0", 0);
 
     this.surface.blit();
     //this.mesh.draw();
-
-    this.shader.unbind();
   }
 }
 

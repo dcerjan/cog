@@ -38,6 +38,11 @@ let getExtensions = () => {
     getExtensions();
     window.gl = gl;
 
+    gl.__statsCalls = 0;
+    gl.inc = () => { gl.__statsCalls++; };
+    gl.reset = () => { gl.__statsCalls = 0; };
+    gl.read = () => { return gl.__statsCalls; };
+
   } catch(error) {
   }
 

@@ -1,5 +1,6 @@
 import React from "react";
 import {publish} from "../util/mediator";
+import gl from "./gl";
 
 class Scene {
 
@@ -29,6 +30,7 @@ class Scene {
       requestAnimationFrame(everyTick);
 
       t0 = window.performance.now();
+      gl.reset();
       this.update();
       this.render();
       t1 = window.performance.now();
@@ -40,7 +42,7 @@ class Scene {
 
       milis = newTs - oldTs;
 
-      publish("fps/update", (1000.0 / milis).toFixed(2), milis.toFixed(1), dt);
+      publish("fps/update", (1000.0 / milis).toFixed(2), milis.toFixed(1), dt, gl.read());
 
     };
     everyTick();

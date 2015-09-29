@@ -7,6 +7,7 @@ class DataBuffer extends Buffer {
 
   draw(primitive, offset, vertices) {
     gl.drawArray(primitive, offset, vertices);
+    gl.inc();
   }
 }
 

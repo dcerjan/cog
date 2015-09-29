@@ -24,6 +24,7 @@ class IndexBuffer extends Buffer {
 
   draw(primitive, vertices, datatype, offset) {
     gl.drawElements(primitive, vertices, this.drawDataType, offset);
+    gl.inc();
   }
 }
 

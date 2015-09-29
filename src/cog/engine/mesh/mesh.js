@@ -1,4 +1,3 @@
-import gl from "../gl";
 import Buffer from "../buffer/buffer";
 import IndexBuffer from "../buffer/index_buffer";
 import DataBuffer from "../buffer/data_buffer";

@@ -23,6 +23,7 @@ class Buffer {
     }
 
     this.id = gl.createBuffer();
+    gl.inc();
     this.type = type;
     this.target = target;
     this.drawMethod = drawMethod;
@@ -32,33 +33,44 @@ class Buffer {
   }
 
   data(data) {
-    gl.bindBuffer(this.target, this.id);    
+    gl.bindBuffer(this.target, this.id);
+    gl.inc();
     gl.bufferData(this.target, data, this.type);
+    gl.inc();
     gl.bindBuffer(this.target, null);
+    gl.inc();
   }
 
   pointer(index, components, type, normalized, offset, stride) {
     this.pointers[index] = () => {
       gl.enableVertexAttribArray(index);
+      gl.inc();
       gl.vertexAttribPointer(index, components, type, normalized, offset, stride);
+      gl.inc();
     };
   }
 
   delete() {
     if(!this.bound) {
       gl.deleteBuffer(this.id);
+      gl.inc();
     } else {
       throw new Error("Buffer.delete cannot be called while buffer is bound"); 
     }
   }
 
   bind() { 
-    gl.bindBuffer(this.target, this.id); 
+    gl.bindBuffer(this.target, this.id);
+    gl.inc();
     this.bound = true; 
     this.pointers.forEach( func => func() );
   }
 
-  unbind() { gl.bindBuffer(this.target, null); this.bound = false; }
+  unbind() { 
+    gl.bindBuffer(this.target, null); 
+    gl.inc();
+    this.bound = false;
+  }
 }
 
 
