@@ -3,6 +3,36 @@ import React from "react";
 
 import gl from "./cog/engine/gl";
 
+
+class FpsCounter extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {fps: 0.0};
+
+    this.updateFpsCounter = (fps, milis) => {
+      this.setState({fps, milis});
+    };
+  }
+
+  componentDidMount() {
+    Cog.Core.subscribe("fps/update", this.updateFpsCounter);
+  }
+
+  componentWillUnmount() {
+    Cog.Core.unsubscribe("fps/update", this.updateFpsCounter);
+  }
+
+  render() {
+    return (
+      <div className="fps-counter">
+        <span className="fps-label">{this.state.fps + " fps"}</span>
+        <span className="fps-label">{this.state.milis + "ms"}</span>
+      </div>
+    );
+  }
+}
+
 class MySceneOverlay extends React.Component {
   constructor(props) {
     super(props);
@@ -24,6 +54,8 @@ class MySceneOverlay extends React.Component {
   render() {
     return (
       <div>
+        <FpsCounter/>
+
         <span>
           {this.props.scene.name}
         </span>
@@ -76,7 +108,11 @@ class MyScene extends Cog.Engine.Scene {
     this.mesh.compile();
 
     // just for clarification: 9 here is intentional
-    // NEVER EVER use NPOT textures
+    // NEVER EVER use NPOT textures with
+    // mipmaps and non gl.NEAREST or gl.LINEAR filtering
+    // framebuffer textures here have no mipmaps generated and
+    // filtering set to gl.NEAREST
+    // https://www.khronos.org/webgl/wiki/WebGL_and_OpenGL_Differences
     this.fbo = new Cog.Engine.FrameBuffer(16, 9);
     this.fbo.addRenderTarget(0);
 
@@ -93,8 +129,8 @@ class MyScene extends Cog.Engine.Scene {
   render() {
     
     this.fbo.begin();
-      this.bake.bind();
-      this.surface.blit();
+    this.bake.bind();
+    this.surface.blit();
     this.fbo.end();
 
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
@@ -104,7 +140,6 @@ class MyScene extends Cog.Engine.Scene {
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.fbo.renderTarget[0].id);
     this.shader.links.sampler2D("fTexChannel0", 0);
-    //gl.uniform1i(this.shader.uniform.samplerUniform, 0);
 
     this.surface.blit();
     //this.mesh.draw();

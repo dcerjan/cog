@@ -5,5 +5,5 @@ varying lowp vec4 fTexCoord;
 varying lowp vec4 fTexCoordAlt;
 
 void main(void) {
-  gl_FragData[0] = vec4(fTexCoord.rgb, 1.0);
+  gl_FragData[0] = vec4(fTexCoord.rg, 0.0, 1.0);
 }

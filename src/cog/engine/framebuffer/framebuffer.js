@@ -73,6 +73,12 @@ class FrameBuffer {
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + index, gl.TEXTURE_2D, this.renderTarget[index].id, 0);
   }
 
+  addRenderTargetFloat(index) {
+    this.renderTarget[index] = new RTTexture(this.width, this.height, gl.RGBA, gl.FLOAT);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, this.id);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + index, gl.TEXTURE_2D, this.renderTarget[index].id, 0);
+  }
+
   begin() {
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.id);
     gl.viewport(0, 0, this.width, this.height);
