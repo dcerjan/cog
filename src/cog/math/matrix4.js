@@ -32,24 +32,24 @@ class Matrix4 {
   mul(other) {
     return new Matrix4(
       this.m[0]* other.m[0] + this.m[4]* other.m[1] + this.m[8] * other.m[2] + this.m[12]* other.m[3],
-      this.m[0]* other.m[4] + this.m[4]* other.m[5] + this.m[8] * other.m[6] + this.m[12]* other.m[7],
-      this.m[0]* other.m[8] + this.m[4]* other.m[9] + this.m[8] *other.m[10] + this.m[12]*other.m[11],
-      this.m[0]*other.m[12] + this.m[4]*other.m[13] + this.m[8] *other.m[14] + this.m[12]*other.m[15],
-
       this.m[1]* other.m[0] + this.m[5]* other.m[1] + this.m[9] * other.m[2] + this.m[13]* other.m[3],
+      this.m[2]* other.m[0] + this.m[6]* other.m[1] +this.m[10] * other.m[2] + this.m[14]* other.m[3],
+      this.m[3]* other.m[0] + this.m[7]* other.m[1] +this.m[11] * other.m[2] + this.m[15]* other.m[3],
+
+      this.m[0]* other.m[4] + this.m[4]* other.m[5] + this.m[8] * other.m[6] + this.m[12]* other.m[7],
       this.m[1]* other.m[4] + this.m[5]* other.m[5] + this.m[9] * other.m[6] + this.m[13]* other.m[7],
+      this.m[2]* other.m[4] + this.m[6]* other.m[5] +this.m[10] * other.m[6] + this.m[14]* other.m[7],
+      this.m[3]* other.m[4] + this.m[7]* other.m[5] +this.m[11] * other.m[6] + this.m[15]* other.m[7],
+
+      this.m[0]* other.m[8] + this.m[4]* other.m[9] + this.m[8] *other.m[10] + this.m[12]*other.m[11],
       this.m[1]* other.m[8] + this.m[5]* other.m[9] + this.m[9] *other.m[10] + this.m[13]*other.m[11],
+      this.m[2]* other.m[8] + this.m[6]* other.m[9] +this.m[10] *other.m[10] + this.m[14]*other.m[11],
+      this.m[3]* other.m[8] + this.m[7]* other.m[9] +this.m[11] *other.m[10] + this.m[15]*other.m[11],
+
+      this.m[0]*other.m[12] + this.m[4]*other.m[13] + this.m[8] *other.m[14] + this.m[12]*other.m[15],
       this.m[1]*other.m[12] + this.m[5]*other.m[13] + this.m[9] *other.m[14] + this.m[13]*other.m[15],
-
-      this.m[2]* other.m[0] + this.m[6]* other.m[1] + this.m[10]* other.m[2] + this.m[14]* other.m[3],
-      this.m[2]* other.m[4] + this.m[6]* other.m[5] + this.m[10]* other.m[6] + this.m[14]* other.m[7],
-      this.m[2]* other.m[8] + this.m[6]* other.m[9] + this.m[10]*other.m[10] + this.m[14]*other.m[11],
-      this.m[2]*other.m[12] + this.m[6]*other.m[13] + this.m[10]*other.m[14] + this.m[14]*other.m[15],
-
-      this.m[3]* other.m[0] + this.m[7]* other.m[1] + this.m[11]* other.m[2] + this.m[15]* other.m[3],
-      this.m[3]* other.m[4] + this.m[7]* other.m[5] + this.m[11]* other.m[6] + this.m[15]* other.m[7],
-      this.m[3]* other.m[8] + this.m[7]* other.m[9] + this.m[11]*other.m[10] + this.m[15]*other.m[11],
-      this.m[3]*other.m[12] + this.m[7]*other.m[13] + this.m[11]*other.m[14] + this.m[15]*other.m[15]
+      this.m[2]*other.m[12] + this.m[6]*other.m[13] +this.m[10] *other.m[14] + this.m[14]*other.m[15],
+      this.m[3]*other.m[12] + this.m[7]*other.m[13] +this.m[11] *other.m[14] + this.m[15]*other.m[15]
     );
   }
 
@@ -81,14 +81,14 @@ class Matrix4 {
 
   scale(s, t, u) {
     return new Matrix4(
-      s,   0.0, 0.0, 0.0,
+        s, 0.0, 0.0, 0.0,
       0.0,   t, 0.0, 0.0,
       0.0, 0.0,   u, 0.0,
       0.0, 0.0, 0.0, 1.0
     );
   }
 
-  ortho(left, right, top, bottom, far, near) {
+  ortho(left, right, top, bottom, near, far) {
     return new Matrix4(
       2.0 / (right - left), 0.0, 0.0, 0.0,
       0.0, 2.0 / (top - bottom), 0.0, 0.0,
@@ -97,7 +97,7 @@ class Matrix4 {
     );
   }
 
-  frustum(left, right, top, bottom, far, near) {
+  frustum(left, right, top, bottom, near, far) {
     return new Matrix4(
       2.0 * near / (right - left), 0.0, 0.0, 0.0,
       0.0, 2.0 * near / (top - bottom), 0.0, 0.0,
@@ -128,8 +128,8 @@ class Matrix4 {
     return new Matrix4(
                right.x,       right.y,        right.z, 0.0,
                  up2.x,         up2.y,          up2.z, 0.0,
-                -fwd.x,        -fwd.y,         -fwd.z, 0.0,
-       right.dot(from), up2.dot(from), -fwd.dot(from), 1.0
+                 fwd.x,         fwd.y,          fwd.z, 0.0,
+       right.dot(from), up2.dot(from),  fwd.dot(from), 1.0
     );
   }
 

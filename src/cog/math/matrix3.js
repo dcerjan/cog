@@ -30,15 +30,15 @@ class Matrix3 {
   mul(other) {
     return new Matrix3(
       this.m[0]*other.m[0] + this.m[3]*other.m[1] + this.m[6]*other.m[2],
-      this.m[0]*other.m[3] + this.m[3]*other.m[4] + this.m[6]*other.m[5],
-      this.m[0]*other.m[6] + this.m[3]*other.m[7] + this.m[6]*other.m[8],
-
       this.m[1]*other.m[0] + this.m[4]*other.m[1] + this.m[7]*other.m[2],
-      this.m[1]*other.m[3] + this.m[4]*other.m[4] + this.m[7]*other.m[5],
-      this.m[1]*other.m[6] + this.m[4]*other.m[7] + this.m[7]*other.m[8],
-
       this.m[2]*other.m[0] + this.m[5]*other.m[1] + this.m[8]*other.m[2],
+
+      this.m[0]*other.m[3] + this.m[3]*other.m[4] + this.m[6]*other.m[5],
+      this.m[1]*other.m[3] + this.m[4]*other.m[4] + this.m[7]*other.m[5],
       this.m[2]*other.m[3] + this.m[5]*other.m[4] + this.m[8]*other.m[5],
+
+      this.m[0]*other.m[6] + this.m[3]*other.m[7] + this.m[6]*other.m[8],
+      this.m[1]*other.m[6] + this.m[4]*other.m[7] + this.m[7]*other.m[8],
       this.m[2]*other.m[6] + this.m[5]*other.m[7] + this.m[8]*other.m[8]
     );
   }

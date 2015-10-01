@@ -77,11 +77,11 @@ let render = (scene) => {
 };
 
 
-
 let
   Renderer = {
     init: init,
     shader: shader,
+    boundShader: () => boundShader,
     render: render
   };
 

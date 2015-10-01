@@ -19,8 +19,11 @@ class Matrix2 {
 
   mul(other) {
     return new Matrix2(
-      this.m[0]*other.m[0] + this.m[2]*other.m[1], this.m[0]*other.m[2] + this.m[2]*other.m[3],
-      this.m[2]*other.m[0] + this.m[3]*other.m[1], this.m[2]*other.m[2] + this.m[3]*other.m[3]
+      this.m[0]*other.m[0] + this.m[2]*other.m[1], 
+      this.m[1]*other.m[0] + this.m[3]*other.m[1],
+      
+      this.m[0]*other.m[2] + this.m[2]*other.m[3], 
+      this.m[1]*other.m[2] + this.m[3]*other.m[3]
     );
   }
 

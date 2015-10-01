@@ -13,9 +13,10 @@ let compileStageFromSource = (type, source) => {
 
 
 let removeComments = (source) => {
-  let ret, i, comment;
+  let ret, i, comment, inlineComment;
 
   comment = false;
+  inlineComment = false;
   ret = "";
 
   for(i = 0; i < source.length; i += 1) {
@@ -25,7 +26,12 @@ let removeComments = (source) => {
     } else if(source[i] === '*' && source[i + 1] === '/') {
       i += 1;
       comment = false;
-    } else if(!comment) {
+    } else if(source[i] === '/' && source[i + 1] === '/') {
+      i += 1;
+      inlineComment = true;
+    } else if(inlineComment && source[i] === '\n') {
+      inlineComment = false;
+    } else if(!comment && !inlineComment) {
       ret += source[i];
     }
   }
@@ -151,97 +157,85 @@ class Shader {
     gl.deleteShader(this.vid); gl.inc();
     gl.deleteShader(this.fd); gl.inc();
 
-    this.uniforms = {};
-    this.vertexUniforms = parseUniforms(removeComments(vertexSource));
-    this.fragmentUniforms = parseUniforms(removeComments(fragmentSource));
+    this.uniforms = {
+      vertex: parseUniforms(removeComments(vertexSource)),
+      fragment: parseUniforms(removeComments(fragmentSource))
+    };
 
-    Object.keys(this.vertexUniforms).forEach( (k) => {
-      this.uniforms[k] = gl.getUniformLocation(this.id, k); gl.inc();
+    Object.keys(this.uniforms.vertex).forEach( (k) => {
+      let l = gl.getUniformLocation(this.id, k); gl.inc();
+      if(l) { 
+        this.uniforms.vertex[k] = l; 
+      } else {
+        console.info("Shader.constructor [Vertex] uniform " + k + " optimized out during shader compile");
+        delete this.uniforms.vertex[k];
+      }
     });
 
-    Object.keys(this.fragmentUniforms).forEach( (k) => {
-      this.uniforms[k] = gl.getUniformLocation(this.id, k); gl.inc();
+    Object.keys(this.uniforms.fragment).forEach( (k) => {
+      let l = gl.getUniformLocation(this.id, k); gl.inc();
+      if(l) { 
+        this.uniforms.fragment[k] = l; 
+      } else {
+        console.info("Shader.constructor [Fragment] uniform " + k + " optimized out during shader compile");
+        delete this.uniforms.fragment[k];
+      }
     });
 
     this.attributes = {};
     Object.keys(parseAttributes(removeComments(vertexSource))).forEach( (attr) => {
-      this.attributes[attr] = gl.getAttribLocation(this.id, attr); gl.inc();
+      let l = gl.getAttribLocation(this.id, attr); gl.inc();
+      if(l) { this.attributes[attr] = l; }
     });
 
     this.links = {};
 
-    this.links["boolean"] = (name, value) => {
-      if(!this.uniforms[name]) { throw new Error("Uniform '" + name + "' not present in shader '" + this.name + "'!"); }
-      gl.uniform1i(this.uniforms[name], value); gl.inc();
-    };
-    this.links["bvec2"] = (name, value) => {
-      if(!this.uniforms[name]) { throw new Error("Uniform '" + name + "' not present in shader '" + this.name + "'!"); }
-      gl.uniform2i(this.uniforms[name], value.x, value.y); gl.inc();
-    };
-    this.links["bvec3"] = (name, value) => {
-      if(!this.uniforms[name]) { throw new Error("Uniform '" + name + "' not present in shader '" + this.name + "'!"); }
-      gl.uniform3i(this.uniforms[name], value.x, value.y, value.z); gl.inc();
-    };
-    this.links["bvec4"] = (name, value) => {
-      if(!this.uniforms[name]) { throw new Error("Uniform '" + name + "' not present in shader '" + this.name + "'!"); }
-      gl.uniform4i(this.uniforms[name], value.x, value.y, value.z, value.w); gl.inc();
+    let makeLink = (cb, name, value) => {
+      if( (this.uniforms.vertex[name] === undefined) && (this.uniforms.fragment[name] === undefined) ) {
+        //console.warn("Uniform '" + name + " not present in compiled shader.");
+      } else {
+        let 
+          loc;
+
+        loc = this.uniforms.fragment[name];
+        if(loc === undefined) {
+          loc = this.uniforms.vertex[name];
+        }
+        cb(loc, value);
+      }
     };
 
-    this.links["int"] = (name, value) => {
-      if(!this.uniforms[name]) { throw new Error("Uniform '" + name + "' not present in shader '" + this.name + "'!"); }
-      gl.uniform1i(this.uniforms[name], value); gl.inc();
-    };
-    this.links["ivec2"] = (name, value) => {
-      if(!this.uniforms[name]) { throw new Error("Uniform '" + name + "' not present in shader '" + this.name + "'!"); }
-      gl.uniform2f(this.uniforms[name], value.x, value.y); gl.inc();
-    };
-    this.links["ivec3"] = (name, value) => {
-      if(!this.uniforms[name]) { throw new Error("Uniform '" + name + "' not present in shader '" + this.name + "'!"); }
-      gl.uniform3i(this.uniforms[name], value.x, value.y, value.z); gl.inc();
-    };
-    this.links["ivec4"] = (name, value) => {
-      if(!this.uniforms[name]) { throw new Error("Uniform '" + name + "' not present in shader '" + this.name + "'!"); }
-      gl.uniform4i(this.uniforms[name], value.x, value.y, value.z, value.w); gl.inc();
-    };
+    this.links["boolean"] = makeLink.bind(this, (uniform, value) => { gl.uniform1i(uniform, value); gl.inc(); });
+    this.links["bvec2"] = makeLink.bind(this, (uniform, value) => { gl.uniform2i(uniform, value.x, value.y); gl.inc(); });
+    this.links["bvec3"] = makeLink.bind(this, (uniform, value) => { gl.uniform3i(uniform, value.x, value.y, value.z); gl.inc(); });
+    this.links["bvec4"] = makeLink.bind(this, (uniform, value) => { gl.uniform4i(uniform, value.x, value.y, value.z, value.w); gl.inc(); });
 
-    this.links["float"] = (name, value) => {
-      if(!this.uniforms[name]) { throw new Error("Uniform '" + name + "' not present in shader '" + this.name + "'!"); }
-      gl.uniform1f(this.uniforms[name], value); gl.inc();
-    };
-    this.links["vec2"] = (name, value) => {
-      if(!this.uniforms[name]) { throw new Error("Uniform '" + name + "' not present in shader '" + this.name + "'!"); }
-      gl.uniform2f(this.uniforms[name], value.x, value.y); gl.inc();
-    };
-    this.links["vec3"] = (name, value) => {
-      if(!this.uniforms[name]) { throw new Error("Uniform '" + name + "' not present in shader '" + this.name + "'!"); }
-      gl.uniform3f(this.uniforms[name], value.x, value.y, value.z); gl.inc();
-    };
-    this.links["vec4"] = (name, value) => {
-      if(!this.uniforms[name]) { throw new Error("Uniform '" + name + "' not present in shader '" + this.name + "'!"); }
-      gl.uniform4f(this.uniforms[name], value.x, value.y, value.z, value.w); gl.inc();
-    };
+    this.links["int"] = makeLink.bind(this, (uniform, value) => { gl.uniform1i(uniform, value); gl.inc(); });
+    this.links["ivec2"] = makeLink.bind(this, (uniform, value) => { gl.uniform2f(uniform, value.x, value.y); gl.inc(); });
+    this.links["ivec3"] = makeLink.bind(this, (uniform, value) => { gl.uniform3i(uniform, value.x, value.y, value.z); gl.inc(); });
+    this.links["ivec4"] = makeLink.bind(this, (uniform, value) => { gl.uniform4i(uniform, value.x, value.y, value.z, value.w); gl.inc(); });
 
-    this.links["mat2"] = (name, value) => {
-      if(!this.uniforms[name]) { throw new Error("Uniform '" + name + "' not present in shader '" + this.name + "'!"); }
-      gl.uniformMatrix2fv(this.uniforms[name], false, Float32Array(value)); gl.inc();
-    };
-    this.links["mat3"] = (name, value) => {
-      if(!this.uniforms[name]) { throw new Error("Uniform '" + name + "' not present in shader '" + this.name + "'!"); }
-      gl.uniformMatrix3fv(this.uniforms[name], false, Float32Array(value)); gl.inc();
-    };
-    this.links["mat4"] = (name, value) => {
-      if(!this.uniforms[name]) { throw new Error("Uniform '" + name + "' not present in shader '" + this.name + "'!"); }
-      gl.uniformMatrix4fv(this.uniforms[name], false, Float32Array(value)); gl.inc();
-    };
+    this.links["float"] = makeLink.bind(this, (uniform, value) => { gl.uniform1f(uniform, value); gl.inc(); });
+    this.links["vec2"] = makeLink.bind(this, (uniform, value) => { gl.uniform2f(uniform, value.x, value.y); gl.inc(); });
+    this.links["vec3"] = makeLink.bind(this, (uniform, value) => { gl.uniform3f(uniform, value.x, value.y, value.z); gl.inc(); });
+    this.links["vec4"] = makeLink.bind(this, (uniform, value) => { gl.uniform4f(uniform, value.x, value.y, value.z, value.w); gl.inc(); });
 
-    this.links["sampler2D"] = (name, value) => {
-      if(!this.uniforms[name]) { throw new Error("Uniform '" + name + "' not present in shader '" + this.name + "'!"); }
-      gl.uniform1i(this.uniforms[name], value); gl.inc();
-    };
-    this.links["samplerCube"] = (name, value) => {
-      if(!this.uniforms[name]) { throw new Error("Uniform '" + name + "' not present in shader '" + this.name + "'!"); }
-      gl.uniform1i(this.uniforms[name], value); gl.inc();
-    };
+    this.links["mat2"] = makeLink.bind(this, (uniform, value) => { gl.uniformMatrix2fv(uniform, false, new Float32Array(value.m)); gl.inc(); });
+    this.links["mat3"] = makeLink.bind(this, (uniform, value) => { gl.uniformMatrix3fv(uniform, false, new Float32Array(value.m)); gl.inc(); });
+    this.links["mat4"] = makeLink.bind(this, (uniform, value) => { gl.uniformMatrix4fv(uniform, false, new Float32Array(value.m)); gl.inc(); });
+
+    this.links["sampler2D"] = makeLink.bind(this, (uniform, value) => { gl.uniform1i(uniform, value); gl.inc(); });
+    this.links["samplerCube"] = makeLink.bind(this, (uniform, value) => { gl.uniform1i(uniform, value); gl.inc(); });
+  }
+
+  texture2D(unit, texture) {
+    gl.activeTexture(gl.TEXTURE0 + unit); gl.inc();
+    gl.bindTexture(gl.TEXTURE_2D, texture.id); gl.inc();
+  }
+
+  textureCube(unit, texture) {
+    gl.activeTexture(gl.TEXTURE0 + unit); gl.inc();
+    gl.bindTexture(gl.TEXTURE_CUBE, texture.id); gl.inc();
   }
 
   bind() {

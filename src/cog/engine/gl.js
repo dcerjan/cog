@@ -10,12 +10,13 @@ let getExtensions = () => {
 
   console.info("Suported extensions: " + JSON.stringify(ext));
 
-  window.exts = exts = ext.map( (ext) => {
+  window.exts = exts = ext.reduce( (memo, ext) => {
     console.info("Loading WebGL Extension: " + ext);
-    return gl.getExtension(ext);
-  });
+    memo[ext] = gl.getExtension(ext);
+    return memo;
+  }, {});
 
-  gl.extensions = ext;
+  gl.extensions = exts;
 };
 
 (() => {

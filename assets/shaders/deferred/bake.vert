@@ -9,11 +9,32 @@ attribute vec4 vTexCoordAlt;
 attribute vec4 vBoneIndex;
 attribute vec4 vBoneWeight;
 
-varying lowp vec4 fTexCoord;
-varying lowp vec4 fTexCoordAlt;
+// varyings
+varying vec4 fPosition;
+varying vec4 fNormal;
+varying vec4 fTangent;
+varying vec4 fColor;
+varying vec4 fTexCoord;
+varying vec4 fTexCoordAlt;
+
+uniform mat4 uModelView;
+uniform mat4 uProjection;
+// uniform mat4 uBoneMatrix[240];
 
 void main() {
-  fTexCoord = vTexCoord;
-  fTexCoordAlt = vTexCoordAlt;
-  gl_Position = vec4(vPosition.xy, 0.0, 1.0);
+  fPosition     = uModelView * vPosition;
+  fNormal       = uModelView * vNormal;
+  fTangent      = uModelView * vTangent;
+  fColor        = vColor;
+  fTexCoord     = vTexCoord;
+  fTexCoordAlt  = vTexCoordAlt;
+
+  // TODO: 
+  //   GPU Skinning
+
+  // NOTE: 
+  // Depth is written to a depth component 16 texture automaticly
+  //
+
+  gl_Position   = uProjection * fPosition;
 }
