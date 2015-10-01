@@ -115,7 +115,7 @@ class MyScene extends Cog.Engine.Scene {
     );
 
     this.mesh.polygons.push(
-      new Cog.Engine.Mesh.Polygon([0, 1, 2]),
+      new Cog.Engine.Mesh.Polygon([0, 1, 2]), 
       new Cog.Engine.Mesh.Polygon([0, 2, 3])
     );
 
@@ -153,6 +153,15 @@ class MyScene extends Cog.Engine.Scene {
       environment: new Cog.Engine.Surface(0.9, 0.8, 0.1, 0.2)
     };
 
+    window.Vec3 = Cog.Math.Vector3;
+    window.Mat4 = Cog.Math.Matrix4;
+    window.r = Mat4.Rotation(new Vec3(0,1,0), 0 && Date.now() * 0.001);
+    window.m = Mat4.Translation(new Cog.Math.Vector3(0.0, 0.0, 0.0));
+    window.v = Mat4.LookAt(new Vec3(5.0, 5.0, 5.0), new Vec3(0.0, 0.0, 0.0), new Vec3(0.0, 1.0, 0.0));
+    window.p = Mat4.Perspective(60.0, 1.6, 0.01, 100.0);
+    window.eye = new Vec3(5,5,5);
+    window.to = new Vec3(0,0,0);
+    window.up = new Vec3(0,1,0);
     console.log(this);
   }
 
@@ -173,15 +182,7 @@ class MyScene extends Cog.Engine.Scene {
     //  )
     //);
 
-    let Vec3 = Cog.Math.Vector3;
-    let Mat4 = Cog.Math.Matrix4;
-    let r = Mat4.Rotation(new Vec3(0,1,0), Date.now() * 0.001);
-    let m = Mat4.Translation(new Cog.Math.Vector3(0.0, 0.0, 0.0));
-    let v = Mat4.LookAt(new Vec3(0.0, 1.0, 5.0), new Vec3(0.0, 0.0, 0.0), new Vec3(0.0, 1.0, 0.0));
-    let p = Mat4.Perspective(60.0, 1.6, 0.01, 100.0);
-    //let p = Mat4.Ortho(-10, 10, -10, 10, 20, -20);
-
-    let t = new Vec3(0, 0, 0);
+    
 
     this.bake.links.mat4("uModelView", v.mul(m.mul(r)));
     this.bake.links.mat4("uProjection", p);

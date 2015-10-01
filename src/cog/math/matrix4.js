@@ -126,10 +126,10 @@ class Matrix4 {
     up2 = right.cross(fwd).normalize();
 
     return new Matrix4(
-               right.x,       right.y,        right.z, 0.0,
-                 up2.x,         up2.y,          up2.z, 0.0,
-                 fwd.x,         fwd.y,          fwd.z, 0.0,
-       right.dot(from), up2.dot(from),  fwd.dot(from), 1.0
+               right.x,          up2.x,         -fwd.x, 0.0,
+               right.y,          up2.y,         -fwd.y, 0.0,
+               right.z,          up2.z,         -fwd.z, 0.0,
+      -right.dot(from), -up2.dot(from),  fwd.dot(from), 1.0
     );
   }
 
