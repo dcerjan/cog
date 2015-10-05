@@ -16,29 +16,28 @@ class Surface {
 
     this.mesh.vertices.push(
       new Mesh.Vertex(
-        new Vector2(-1.0 + 2.0 * this.rect.x, 1.0 - 2.0 * this.rect.y), 
-        null, null, null, new Vector4(0.0, 0.0, 0.0, 0.0)
-      ),
-      
-      new Mesh.Vertex(
-        new Vector2(-1.0 + 2.0 * (this.rect.x + this.rect.w), 1.0 - 2.0 * this.rect.y), 
-        null, null, null, new Vector4(1.0, 0.0, 1.0, 0.0)
+        new Vector2(-1.0 + 2.0 * this.rect.x, 1.0 - 2.0 * (this.rect.y + this.rect.h)),
+        null, null, null, new Vector4(0.0, 1.0, 0.0, 1.0)
       ),
       
       new Mesh.Vertex(
         new Vector2(-1.0 + 2.0 * (this.rect.x + this.rect.w), 1.0 - 2.0 * (this.rect.y + this.rect.h)), 
         null, null, null, new Vector4(1.0, 1.0, 1.0, 1.0)
       ),
-      
+
       new Mesh.Vertex(
-        new Vector2(-1.0 + 2.0 * this.rect.x, 1.0 - 2.0 * (this.rect.y + this.rect.h)),
-        null, null, null, new Vector4(0.0, 1.0, 0.0, 1.0)
+        new Vector2(-1.0 + 2.0 * (this.rect.x + this.rect.w), 1.0 - 2.0 * this.rect.y), 
+        null, null, null, new Vector4(1.0, 0.0, 1.0, 0.0)
+      ),
+
+      new Mesh.Vertex(
+        new Vector2(-1.0 + 2.0 * this.rect.x, 1.0 - 2.0 * this.rect.y), 
+        null, null, null, new Vector4(0.0, 0.0, 0.0, 0.0)
       )
     );
 
     this.mesh.polygons.push(
-      new Mesh.Polygon([0, 1, 2]),
-      new Mesh.Polygon([0, 2, 3])
+      new Mesh.Polygon([0, 1, 2]), new Mesh.Polygon([0, 2, 3])
     );
 
     this.mesh.compile();

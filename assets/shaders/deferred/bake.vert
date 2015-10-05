@@ -23,8 +23,8 @@ uniform mat4 uProjection;
 
 void main() {
   fPosition     = uModelView * vPosition;
-  fNormal       = uModelView * vNormal;
-  fTangent      = uModelView * vTangent;
+  fNormal       = uModelView * vec4(vNormal.xyz * 2.0 - 1.0, 0.0);
+  fTangent      = uModelView * vec4(vTangent.xyz * 2.0 - 1.0, 0.0);
   fColor        = vColor;
   fTexCoord     = vTexCoord;
   fTexCoordAlt  = vTexCoordAlt;

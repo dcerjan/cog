@@ -114,16 +114,16 @@ void main(void) {
     }
 
     if(mHasNormalMap == 1) {
-      N = TBN * (2.0 * texture2D(uNormalMap, fTexCoord.xy) - 1.0).xyz;
-      gl_FragData[1] = vec4(0.5 + 0.5 * N.xy, height, uSpecularIntensity);
+      N = TBN * (texture2D(uNormalMap, fTexCoord.xy)).xyz;
     } else {
-      gl_FragData[1] = vec4(0.5 + 0.5 * N.xy, height, uSpecularIntensity);
+      //N = TBN * N;
     }
+    gl_FragData[1] = vec4(N.xy * 0.5 + 0.5, height, uSpecularIntensity);
   
   // ============================================================== //
   // =  Diffuse + Detail + Ambient Occlusion + Diffuse Intensity  = //
   // ============================================================== //
-    vec4 detail = vec4(0.5); // neutral factor for overlay blending
+    vec4 detail = vec4(2.0); // neutral factor for overlay blending
     float ao = 1.0; // neutral factor for ambient occlusion multiplication
 
     if(mHasDetailMap == 1) {

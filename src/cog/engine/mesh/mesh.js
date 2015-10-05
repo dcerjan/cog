@@ -83,7 +83,7 @@ class Mesh {
           // calculate normal for this polygon
           v0 = this.vertices[p.indices[1]].position.sub(this.vertices[p.indices[0]].position);
           v1 = this.vertices[p.indices[2]].position.sub(this.vertices[p.indices[0]].position);
-          p.normal = v0.cross(v1).normalize();
+          p.normal = v1.cross(v0).normalize();
           // accumulate normal vector at that vertex
           v.normal = v.normal.add(p.normal);
         }
