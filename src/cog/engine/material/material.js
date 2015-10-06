@@ -125,6 +125,41 @@ class Material {
     s.links.ivec4("uIntChannel[0]", new Vector4(...flags.slice(0,4)));
     s.links.ivec4("uIntChannel[1]", new Vector4(...flags.slice(4,8)));
   }
+
+  unbind() {
+    if(this.ambient.occlusion.map) {
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, null);
+    }
+    if(this.diffuse.map) {
+      gl.activeTexture(gl.TEXTURE0 + 1);
+      gl.bindTexture(gl.TEXTURE_2D, null);
+    }
+    if(this.specular.map) {
+      gl.activeTexture(gl.TEXTURE0 + 2);
+      gl.bindTexture(gl.TEXTURE_2D, null);
+    }
+    if(this.bump.normal.map) {
+      gl.activeTexture(gl.TEXTURE0 + 3);
+      gl.bindTexture(gl.TEXTURE_2D, null);
+    }
+    if(this.bump.height.map) {
+      gl.activeTexture(gl.TEXTURE0 + 4);
+      gl.bindTexture(gl.TEXTURE_2D, null);
+    }
+    if(this.environment.map) {
+      gl.activeTexture(gl.TEXTURE0 + 5);
+      gl.bindTexture(gl.TEXTURE_2D, null);
+    }
+    if(this.detail.map) {
+      gl.activeTexture(gl.TEXTURE0 + 6);
+      gl.bindTexture(gl.TEXTURE_2D, null);
+    }
+    if(this.glow.map) {
+      gl.activeTexture(gl.TEXTURE0 + 7);
+      gl.bindTexture(gl.TEXTURE_2D, null);
+    }    
+  }
 }
 
 export default Material;

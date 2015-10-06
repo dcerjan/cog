@@ -45,6 +45,7 @@ let getExtensions = () => {
     gl.read = () => { return gl.__statsCalls; };
 
   } catch(error) {
+    console.log(error);
   }
 
   if(!gl) {

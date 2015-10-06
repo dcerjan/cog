@@ -54,15 +54,25 @@ class MySceneOverlay extends React.Component {
 
     let loader = new Cog.Engine.Loader("assets/shaders");
     loader.load(
-      ["blit/blit.frag", "blit/blit.vert", "deferred/bake.vert", "deferred/bake.frag", "deferred/debug/normal.frag", "deferred/debug/diffuse.frag"], 
+      [
+        "blit/blit.frag", 
+        "blit/blit.vert", 
+        "deferred/bake.vert", 
+        "deferred/bake.frag",
+        "deferred/compose.frag",
+        "deferred/debug/normal.frag", 
+        "deferred/debug/diffuse.frag"
+      ], 
       (name, _) => { console.log("Resource " + name + " loaded"); },
       () => { 
         let shader = new Cog.Engine.Shader("blit example", loader.get("blit/blit.vert"), loader.get("blit/blit.frag"));
         let bake = new Cog.Engine.Shader("bake example", loader.get("deferred/bake.vert"), loader.get("deferred/bake.frag"));
+        let compose = new Cog.Engine.Shader("compose example", loader.get("blit/blit.vert"), loader.get("deferred/compose.frag"));
         let debugNormal = new Cog.Engine.Shader("debug normal", loader.get("blit/blit.vert"), loader.get("deferred/debug/normal.frag"));
         let debugDiffuse = new Cog.Engine.Shader("debug normal", loader.get("blit/blit.vert"), loader.get("deferred/debug/diffuse.frag"));
         this.props.scene.store.set("blit example shader", shader);
         this.props.scene.store.set("bake example shader", bake);
+        this.props.scene.store.set("compose example shader", compose);
         this.props.scene.store.set("debug normal", debugNormal);
         this.props.scene.store.set("debug diffuse", debugDiffuse);
 
@@ -70,8 +80,13 @@ class MySceneOverlay extends React.Component {
         this.props.scene.tex = gl.createTexture();
 
         img.onload = () => {
+
+          let ext = gl.getExtension("EXT_texture_filter_anisotropic");
+          let max = gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+
           gl.bindTexture(gl.TEXTURE_2D, this.props.scene.tex);
           gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+          gl.texParameterf(gl.TEXTURE_2D, ext.TEXTURE_MAX_ANISOTROPY_EXT, max);
           gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
           gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
           gl.generateMipmap(gl.TEXTURE_2D);
@@ -110,6 +125,7 @@ class MyScene extends Cog.Engine.Scene {
   setup() {
     this.shader = this.store.get("blit example shader");
     this.bake = this.store.get("bake example shader");
+    this.compose = this.store.get("compose example shader");
     this.surface = new Cog.Engine.Surface(0.0, 0.0, 1.0, 1.0);
     this.spline = new Cog.Math.CatmullRomSpline2();
     this.mesh = new Cog.Engine.Mesh(Cog.Engine.Mesh.Type.Static);
@@ -266,13 +282,25 @@ class MyScene extends Cog.Engine.Scene {
 
 
     // blit
-    this.shader.texture2D(0, this.fbo.renderTarget[2]);
-    this.shader.links.sampler2D("fTexChannel0", 0);
+
+    this.compose.bind();
+    this.compose.links.sampler2D("fPosition", 0);
+    this.compose.links.sampler2D("fDepth", 1);
+    this.compose.links.sampler2D("fNormal", 2);
+    this.compose.links.sampler2D("fDiffuse", 3);
+    this.compose.links.sampler2D("fSpecular", 4);
+
+    this.compose.texture2D(0, this.fbo.renderTarget[0]);
+    this.compose.texture2D(1, this.fbo.depthBuffer);
+    this.compose.texture2D(2, this.fbo.renderTarget[1]);
+    this.compose.texture2D(3, this.fbo.renderTarget[2]);
+    this.compose.texture2D(4, this.fbo.renderTarget[3]);
     this.surface.blit();
 
-    this.fbo.renderTarget.forEach(rt => rt && rt.unbind());
-
-    //this.mesh.draw();
+    for(let i = 0; i < 16; i++) {
+      gl.activeTexture(gl.TEXTURE0 + i);
+      gl.bindTexture(gl.TEXTURE_2D, null);
+    }
   }
 }
 

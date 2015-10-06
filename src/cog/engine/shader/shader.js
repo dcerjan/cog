@@ -148,7 +148,7 @@ class Shader {
     if(!gl.getProgramParameter(this.id, gl.LINK_STATUS)) {
       throw new Error("Could not link the shader program!");
     } else {
-      console.info("Shader '" + name + "'' succesfully compiled and linked");
+      console.info("Shader '" + name + "' succesfully compiled and linked");
     }
     gl.inc();
 
@@ -185,7 +185,7 @@ class Shader {
     this.attributes = {};
     Object.keys(parseAttributes(removeComments(vertexSource))).forEach( (attr) => {
       let l = gl.getAttribLocation(this.id, attr); gl.inc();
-      if(l) { this.attributes[attr] = l; }
+      if(l !== undefined && l !== null) { this.attributes[attr] = l; }
     });
 
     this.links = {};
