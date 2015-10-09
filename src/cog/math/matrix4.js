@@ -1,11 +1,21 @@
 import Vector3 from "./vector3";
 
+
+let det3x3 = (a00, a10, a20, a01, a11, a21, a02, a12, a22) => {
+  return (
+    a00 * (a11*a22 - a21*a12) +
+    a10 * (a21*a02 - a01*a22) +
+    a20 * (a01*a12 - a11*a02)
+  );
+};
+
+
 class Matrix4 {
   constructor(
-    a00 = 1.0, a01 = 0.0, a02 = 0.0, a03 = 0.0,
-    a10 = 0.0, a11 = 1.0, a12 = 0.0, a13 = 0.0,
-    a20 = 0.0, a21 = 0.0, a22 = 1.0, a23 = 0.0,
-    a30 = 0.0, a31 = 0.0, a32 = 0.0, a33 = 1.0
+    /* 0*/a00 = 1.0, /* 1*/a01 = 0.0, /* 2*/a02 = 0.0, /* 3*/a03 = 0.0,
+    /* 4*/a10 = 0.0, /* 5*/a11 = 1.0, /* 6*/a12 = 0.0, /* 7*/a13 = 0.0,
+    /* 8*/a20 = 0.0, /* 9*/a21 = 0.0, /*10*/a22 = 1.0, /*11*/a23 = 0.0,
+    /*12*/a30 = 0.0, /*13*/a31 = 0.0, /*14*/a32 = 0.0, /*15*/a33 = 1.0
   ) {
     this.m = [
       a00, a01, a02, a03,
@@ -25,8 +35,35 @@ class Matrix4 {
   }
 
   inverse() {
-    throw new Error("Matrix4.inverse not implemented");
-    return new Matrix4();
+    let 
+      d00 = det3x3(this.m[5], this.m[6], this.m[7], this.m[9], this.m[10], this.m[11], this.m[13], this.m[14], this.m[15]),
+      d01 = det3x3(this.m[4], this.m[6], this.m[7], this.m[8], this.m[10], this.m[11], this.m[12], this.m[14], this.m[15]),
+      d02 = det3x3(this.m[4], this.m[5], this.m[7], this.m[8], this.m[9], this.m[11],  this.m[12], this.m[13], this.m[15]),
+      d03 = det3x3(this.m[4], this.m[5], this.m[6], this.m[8], this.m[9], this.m[10], this.m[12], this.m[13], this.m[14]),
+
+      d10 = det3x3(this.m[1], this.m[2], this.m[3], this.m[9], this.m[10], this.m[11], this.m[13], this.m[14], this.m[15]),
+      d11 = det3x3(this.m[0], this.m[2], this.m[3], this.m[8], this.m[10], this.m[11], this.m[12], this.m[14], this.m[15]),
+      d12 = det3x3(this.m[0], this.m[1], this.m[3], this.m[8], this.m[9], this.m[11], this.m[12], this.m[13], this.m[15]),
+      d13 = det3x3(this.m[0], this.m[1], this.m[2], this.m[8], this.m[9], this.m[10], this.m[12], this.m[13], this.m[14]),   
+
+      d20 = det3x3(this.m[1], this.m[2], this.m[3], this.m[5], this.m[6], this.m[7], this.m[13], this.m[14], this.m[15]),
+      d21 = det3x3(this.m[0], this.m[2], this.m[3], this.m[4], this.m[6], this.m[7], this.m[12], this.m[14], this.m[15]),
+      d22 = det3x3(this.m[0], this.m[1], this.m[3], this.m[4], this.m[5], this.m[7], this.m[12], this.m[13], this.m[15]),
+      d23 = det3x3(this.m[0], this.m[1], this.m[2], this.m[4], this.m[5], this.m[6], this.m[12], this.m[13], this.m[14]),
+
+      d30 = det3x3(this.m[1], this.m[2], this.m[3], this.m[5], this.m[6], this.m[7], this.m[9], this.m[10], this.m[11]),
+      d31 = det3x3(this.m[0], this.m[2], this.m[3], this.m[4], this.m[6], this.m[7], this.m[8], this.m[10], this.m[11]),  
+      d32 = det3x3(this.m[0], this.m[1], this.m[3], this.m[4], this.m[5], this.m[7], this.m[8], this.m[9], this.m[11]),
+      d33 = det3x3(this.m[0], this.m[1], this.m[2], this.m[4], this.m[5], this.m[6], this.m[8], this.m[9], this.m[10]),
+    
+      d = 1.0 / (this.m[0] * d00 - this.m[1] * d01 + this.m[2] * d02 - this.m[3] * d03);
+
+    return new Matrix4(
+      +d00 * d, -d10 * d, +d20 * d, -d30 * d,
+      -d01 * d, +d11 * d, -d21 * d, +d31 * d,
+      +d02 * d, -d12 * d, +d22 * d, -d32 * d,
+      -d03 * d, +d13 * d, -d23 * d, +d33 * d
+    );
   }
 
   mul(other) {

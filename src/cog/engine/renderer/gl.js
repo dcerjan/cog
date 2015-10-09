@@ -44,6 +44,13 @@ let getExtensions = () => {
     gl.reset = () => { gl.__statsCalls = 0; };
     gl.read = () => { return gl.__statsCalls; };
 
+    gl.clearColor(0.7, 0.7, 0.7, 1.0); gl.inc();
+    gl.clearDepth(1.0); gl.inc();
+    gl.enable(gl.DEPTH_TEST); gl.inc();
+    gl.enable(gl.CULL_FACE); gl.inc();
+    gl.frontFace(gl.CCW); gl.inc();
+    gl.cullFace(gl.BACK); gl.inc();
+
   } catch(error) {
     console.log(error);
   }

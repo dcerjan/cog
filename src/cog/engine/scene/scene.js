@@ -1,6 +1,9 @@
 import React from "react";
-import {publish} from "../util/mediator";
-import gl from "./gl";
+import Graph from "./graph/graph";
+import gl from "../renderer/gl";
+import Renderer from "../renderer/renderer";
+import {publish} from "../../util/mediator";
+import Camera from "./entity/camera";
 
 class Scene {
 
@@ -13,6 +16,11 @@ class Scene {
         window.document.getElementById("overlay")
       );
     }
+
+    this.graph = new Graph();
+    this.camera = new Camera();
+
+    this.graph.root.mount(this.camera);
   }
 
   start() {
@@ -26,13 +34,13 @@ class Scene {
 
     oldTs = newTs = Date.now();
 
-    let everyTick = () => {
-      requestAnimationFrame(everyTick);
+    let frame = () => {
+      requestAnimationFrame(frame);
 
       t0 = window.performance.now();
       gl.reset();
       this.update();
-      this.render();
+      Renderer.render(this);
       t1 = window.performance.now();
       dt = t1 - t0;
       dt = (dt > 0 ? dt.toFixed(4) : "0.0000");
@@ -45,12 +53,11 @@ class Scene {
       publish("fps/update", (1000.0 / milis).toFixed(2), milis.toFixed(1), dt, gl.read());
 
     };
-    everyTick();
+    frame();
   }
 
   setup()           { throw new Error("method not implemented: setup()");   }
   update()          { throw new Error("method not implemented: update()");  }
-  render()          { throw new Error("method not implemented: render()");  }
   pause()           { throw new Error("method not implemented: pause()");   }
   cleanup()         { throw new Error("method not implemented: cleanup()"); }
   toJSON()          { throw new Error("method not implemented: toJSON()");  }

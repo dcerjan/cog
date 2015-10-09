@@ -1,4 +1,4 @@
-import gl from "../gl";
+import gl from "./gl";
 
 class Buffer {
   constructor(target, type, drawMethod) {

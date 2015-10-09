@@ -1,4 +1,5 @@
 import Buffer from "./buffer";
+import gl from "./gl";
 
 class IndexBuffer extends Buffer {
   constructor() {

@@ -1,4 +1,5 @@
 import Buffer from "./buffer";
+import gl from "./gl";
 
 class DataBuffer extends Buffer {
   constructor(type) {

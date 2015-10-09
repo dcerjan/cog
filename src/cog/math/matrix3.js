@@ -3,9 +3,9 @@ import Vector3 from "./vector3";
 
 class Matrix3 {
   constructor(
-    a00 = 1.0, a01 = 0.0, a02 = 0.0,
-    a10 = 0.0, a11 = 1.0, a12 = 0.0,
-    a20 = 0.0, a21 = 0.0, a22 = 1.0
+    /*0*/a00 = 1.0, /*1*/a01 = 0.0, /*2*/a02 = 0.0,
+    /*3*/a10 = 0.0, /*4*/a11 = 1.0, /*5*/a12 = 0.0,
+    /*6*/a20 = 0.0, /*7*/a21 = 0.0, /*8*/a22 = 1.0
   ) {
     this.m = [
       a00, a01, a02,
@@ -23,8 +23,26 @@ class Matrix3 {
   }
 
   inverse() {
-    throw new Error("Matrix3.inverse not implemented");
-    return new Matrix3();
+    let
+      d00 = this.m[4] * this.m[8] - this.m[5] * this.m[7],
+      d01 = this.m[3] * this.m[8] - this.m[5] * this.m[6],
+      d02 = this.m[3] * this.m[7] - this.m[4] * this.m[6],
+    
+      d10 = this.m[1] * this.m[8] - this.m[2] * this.m[7],
+      d11 = this.m[0] * this.m[8] - this.m[2] * this.m[6],
+      d12 = this.m[0] * this.m[7] - this.m[1] * this.m[6],
+    
+      d20 = this.m[1] * this.m[5] - this.m[2] * this.m[4],
+      d21 = this.m[0] * this.m[5] - this.m[2] * this.m[6],
+      d22 = this.m[0] * this.m[4] - this.m[1] * this.m[3],
+    
+      d = 1.0 / (this.m[0] * d00 + this.m[1] * d01 + this.m[2] * d02);
+    
+    return new Matrix3(
+      +d00 * d, -d10 * d, +d20 * d,
+      -d01 * d, +d11 * d, -d21 * d,
+      +d02 * d, -d12 * d, +d22 * d
+    );
   }
 
   mul(other) {
