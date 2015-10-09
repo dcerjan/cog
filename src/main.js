@@ -1,6 +1,13 @@
 import Cog from "./cog/cog";
 import React from "react";
 
+
+let Box = Cog.Engine.Renderer.Mesh.Box;
+let Material = Cog.Engine.Renderer.Material;
+let Prop = Cog.Engine.Scene.Entity.Prop;
+let Node = Cog.Engine.Scene.Graph.Node;
+
+
 class Stats extends React.Component {
   constructor(props) {
     super(props);
@@ -95,9 +102,16 @@ class MyScene extends Cog.Engine.Scene {
     this.store = new Cog.Util.Store();
   }
 
-  setup() {
-    this.box = Cog.Engine.Renderer.Mesh.Box(1,1,1);
-    this.env = Cog.Engine.Renderer.Mesh.Box(1,1,1,true);
+  setup() {    
+    this.box = new Prop("box", new Box(1,1,1), new Material());
+    this.env = new Prop("env", new Box(1,1,1, true), new Material());
+
+    this.graph.root.mount(this.env);
+
+    let node = new Node();
+    node.mount(this.box);
+
+    this.graph.root.append(node);
   }
 
   update(dt) {

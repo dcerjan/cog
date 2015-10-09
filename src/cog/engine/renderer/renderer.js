@@ -5,6 +5,8 @@ import Shader from "./shader";
 import Loader from "../../util/loader";
 import Store from "../../util/store";
 
+import Entity from "../scene/entity/entity";
+import Prop from "../scene/entity/prop";
 
 let contextProperties = {
   maxTextureUnits: gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS)
@@ -134,7 +136,7 @@ class DeferredRenderer {
             drawList;
 
           scene.graph.traverse( (node) => {
-            node.entities.forEach( (e) => {
+            node.entity.forEach( (e) => {
               if(!e instanceof Entity)          { throw new Error("object is ot an entity!"); } 
               //else if(e instanceof Actor)       { drawable.push({entity: e, node: node}); } 
               else if(e instanceof Prop)        { drawable.push({entity: e, node: node}); } 
@@ -154,7 +156,7 @@ class DeferredRenderer {
           }, {});
 
           Object.keys(drawList).forEach( (k) => {
-            shader.link.mat4("uModelView", scene.camera.node.totalTransform.inverse().mul(drawList[k].transform));
+            shader.links.mat4("uModelView", scene.camera.node.totalTransform.inverse().mul(drawList[k].transform));
 
             drawList[k].drawables.forEach( (d) => {
               d.material.bind(shader);

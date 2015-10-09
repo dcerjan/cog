@@ -35,6 +35,10 @@ class Node {
     return null;
   }
 
+  append(node) {
+    this.children.push(node);
+  }
+
   translate(vec) {
     this._dirty = true;
     this._subTransforms.translation = Matrix4.Translation(vec);
