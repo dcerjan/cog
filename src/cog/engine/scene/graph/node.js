@@ -10,9 +10,9 @@ class Node {
 
     this._dirty = true;
     this._subTransforms = {
-      translation: { mat: Matrix4.Identity() },
-      rotation: { mat: Matrix4.Identity() },
-      scale: { mat: Matrix4.Identity() }
+      translation: Matrix4.Identity(),
+      rotation: Matrix4.Identity(),
+      scale: Matrix4.Identity()
     };
 
     this.parent = parent;
@@ -37,35 +37,37 @@ class Node {
 
   append(node) {
     this.children.push(node);
+    node.parent = this;
   }
 
   translate(vec) {
     this._dirty = true;
+    this._subTransforms.lookat = null;
     this._subTransforms.translation = Matrix4.Translation(vec);
   }
 
   rotate(axis, angle) {
     this._dirty = true;
+    this._subTransforms.lookat = null;
     this._subTransforms.rotation = Matrix4.Rotation(axis, angle); 
   }
 
   scale(vec) {
     this._dirty = true;
-    this._subTransforms.scale = Matrix4.Scale(axis, angle);
+    this._subTransforms.lookat = null;
+    this._subTransforms.scale = Matrix4.Scale(vec.x, vec.y, vec.z);
   }
 
   lookAt(at, up = new Vector3(0,1,0)) {
-    let
-      worldSpacePosition = this.getPosition(false);
-
     this._dirty = true;
-    this._subTransforms.rotation = Matrix4.LookAt(worldSpacePosition, at, up);
-    this._subTransforms.scale = Matrix4.Identity();
+    this._subTransforms.lookat = { at, up };
+    this._subTransforms.rotation = Matrix4.Identity();
     this._subTransforms.translation = Matrix4.Identity();
+    this._subTransforms.scale = Matrix4.Identity();
   }
 
   update(dt) {
-    this.entities.forEach( e => e.update(dt) );
+    this.entity.forEach( e => e.update(dt) );
   }
 
   getPosition(local = true) {
@@ -74,7 +76,7 @@ class Node {
 
     if(local || !this.parent) { return localPosition; }
 
-    return this.parent.totalTransform.mul(localPosition);
+    return this.parent.totalTransform.transform(localPosition);
   }
 
   mount(entity) {

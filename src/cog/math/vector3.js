@@ -68,6 +68,15 @@ class Vector3 {
   }
 }
 
+const _zero = new Vector3();
+const _x = new Vector3(1,0,0);
+const _y = new Vector3(0,1,0);
+const _z = new Vector3(0,0,1);
+
 Vector3.Lerp = (src, dst, t) => src.lerp(dst, t);
+Vector3.Zero = _zero;
+Vector3.X = _x;
+Vector3.Y = _y;
+Vector3.Z = _z;
 
 export default Vector3;

@@ -39,7 +39,8 @@ class Scene {
 
       t0 = window.performance.now();
       gl.reset();
-      this.update();
+      this.update(newTs - oldTs);
+      this.graph.update(newTs - oldTs);
       Renderer.render(this);
       t1 = window.performance.now();
       dt = t1 - t0;

@@ -11,7 +11,7 @@ uniform sampler2D   fSpecular;
 //uniform samplerCube fEnvironment;
 
 
-const vec3 light        = vec3(-1.0, 1.0, 1.0);
+const vec3 light        = vec3(-1.0, 1.0, -4.0);
 const vec3 attenuation  = vec3(0.0, 0.008, 0.03);
 const vec4 color        = vec4(1.0);
 
@@ -48,6 +48,6 @@ void main() {
       col += vec4( (sNormal.a * 2.0 - 1.0) * specularFactor * sSpecular.rgb, 1.0);
     }
   }
-  
+
   gl_FragColor = vec4(att * col.rgb * sDiffuse.rgb, 1.0);
 }
