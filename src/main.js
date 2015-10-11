@@ -7,7 +7,8 @@ let Material = Cog.Engine.Renderer.Material;
 let Prop = Cog.Engine.Scene.Entity.Prop;
 let Node = Cog.Engine.Scene.Graph.Node;
 let Vec3 = Cog.Math.Vector3;
-
+let Light = Cog.Engine.Scene.Entity.Light;
+let Color = Cog.Engine.Renderer.Color;
 
 class Stats extends React.Component {
   constructor(props) {
@@ -102,40 +103,29 @@ class MyScene extends Cog.Engine.Scene {
   }
 
   setup() {
-    this.box = new Prop("box", new Box(1,1,1), new Material());
-    this.env = new Prop("env", new Box(1,1,1, true), new Material());
-    this.box.material.diffuse.map = {id: this.tex};
-    this.env.material.diffuse.map = {id: this.tex};
+    this.box = new Prop("box", new Box(1,1,1), new Material().diffuse.map({id: this.tex}));
+    this.env = new Prop("env", new Box(1,1,1, true), new Material().diffuse.map({id: this.tex}));
 
-    this.node = new Node("boxnode");
-    this.node.mount(this.box);
-    this.node.translate(new Vec3(0,0.5,0));
-
-    let env = new Node("envnode");
-    env.scale(new Vec3(10,10,10));
-    env.translate(new Vec3(0,5,0));
-    env.mount(this.env);
-
-    let 
-      cam = {
-        pos: new Node("campos"),
-        node: new Node("cammount")
-      };
-
-    cam.pos.append(cam.node);
-    cam.node.mount(this.camera);
-    cam.pos.translate(new Vec3(5,5,5));
-
-    this.graph.root.append(env);
-    this.graph.root.append(this.node);
-    this.graph.root.append(cam.pos);
+    this.graph.root
+      .append(new Node("envnode")
+        .scale(new Vec3(10,10,10))
+        .translate(new Vec3(0,5,0))
+        .mount(this.env))
+      .append(new Node("boxnode")
+        .translate(new Vec3(0,0.5,0))
+        .mount(this.box))
+      .append(new Node("campos")
+        .translate(new Vec3(5,5,5))
+        .append(new Node("camnode")
+          .mount(this.camera)))
+      .append(new Node("lightnode")
+        .translate(new Vec3(0,3,0))
+        .mount(new Light.Point("pl_0", new Color(0.5, 0.5, 1.0), 2.0)));
   }
 
   update(dt) {
     this.camera.node.lookAt(new Vec3(0,0,0));
-
-    this.node.rotate(Vec3.Y, Date.now() * 0.001);
-    //this.node.scale(new Vec3(0.5 + 0.5 * Math.cos(Date.now() * 0.01), 1.0, 1.0));
+    this.graph.root.findChild("boxnode").rotate(Vec3.Y, Date.now() * 0.001);
   }
 }
 

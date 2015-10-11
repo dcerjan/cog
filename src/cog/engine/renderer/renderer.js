@@ -7,6 +7,7 @@ import Store from "../../util/store";
 
 import Entity from "../scene/entity/entity";
 import Prop from "../scene/entity/prop";
+import Light from "../scene/entity/light";
 
 let contextProperties = {
   maxTextureUnits: gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS)
@@ -141,7 +142,7 @@ class DeferredRenderer {
               //else if(e instanceof Actor)       { drawable.push({entity: e, node: node}); } 
               else if(e instanceof Prop)        { drawable.push({entity: e, node: node}); } 
               //else if(e instanceof Emitter)     { drawable.push({entity: e, node: node}); }
-              //else if(e instanceof Light)       { light.push({entity: e, node: node}); } 
+              else if(e instanceof Light)       { light.push({entity: e, node: node}); } 
               //else if(e instanceof Light.Probe) { lightProbe.push({entity: e, node: node}); }
               //else if(e instanceof Camera)      { camera.push({entity: e, node: node}); }  <-- maybe something can be done?
             });

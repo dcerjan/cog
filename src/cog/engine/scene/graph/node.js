@@ -38,24 +38,32 @@ class Node {
   append(node) {
     this.children.push(node);
     node.parent = this;
+
+    return this;
   }
 
   translate(vec) {
     this._dirty = true;
     this._subTransforms.lookat = null;
     this._subTransforms.translation = Matrix4.Translation(vec);
+
+    return this;
   }
 
   rotate(axis, angle) {
     this._dirty = true;
     this._subTransforms.lookat = null;
-    this._subTransforms.rotation = Matrix4.Rotation(axis, angle); 
+    this._subTransforms.rotation = Matrix4.Rotation(axis, angle);
+
+    return this;
   }
 
   scale(vec) {
     this._dirty = true;
     this._subTransforms.lookat = null;
     this._subTransforms.scale = Matrix4.Scale(vec.x, vec.y, vec.z);
+
+    return this;
   }
 
   lookAt(at, up = new Vector3(0,1,0)) {
@@ -64,6 +72,8 @@ class Node {
     this._subTransforms.rotation = Matrix4.Identity();
     this._subTransforms.translation = Matrix4.Identity();
     this._subTransforms.scale = Matrix4.Identity();
+
+    return this;
   }
 
   update(dt) {
@@ -82,6 +92,8 @@ class Node {
   mount(entity) {
     this.entity.push(entity);
     entity.mount(this);
+
+    return this;
   }
 
   unmount(entity) {
@@ -92,6 +104,8 @@ class Node {
       entity.unmount(this);
       return false;
     });
+
+    return this;
   }
 }
 
