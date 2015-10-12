@@ -1,4 +1,4 @@
-import gl from "./engine/gl";
+import gl from "./engine/renderer/gl";
 
 class Cog {
   constructor(scene) {
@@ -48,7 +48,7 @@ class Cog {
   import Color from "./engine/renderer/color";
   import Mesh from "./engine/renderer/mesh";
   import Box from "./engine/renderer/box";
-  //import Sphere from "./engine/renderer/sphere";
+  import Sphere from "./engine/renderer/sphere";
   //import Torus from "./engine/renderer/torus";
   import Material from "./engine/renderer/material";
   import Shader from "./engine/renderer/shader";
@@ -59,7 +59,7 @@ class Cog {
   Cog.Engine.Renderer.Color = Color;
   Cog.Engine.Renderer.Mesh = Mesh;
   Cog.Engine.Renderer.Mesh.Box = Box;
-  //Cog.Engine.Renderer.Mesh.Sphere = Sphere;
+  Cog.Engine.Renderer.Mesh.Sphere = Sphere;
   //Cog.Engine.Renderer.Mesh.Torus = Torus;
   Cog.Engine.Renderer.Material = Material;
   Cog.Engine.Renderer.Shader = Shader;
@@ -72,7 +72,7 @@ class Cog {
 /**********/
 /*  Math  */
 /**********/
-  import * as MathUtils from "./math/util";
+  import MathUtil from "./math/util";
   import Vector2 from "./math/vector2";
   import Vector3 from "./math/vector3";
   import Vector4 from "./math/vector4";
@@ -83,7 +83,7 @@ class Cog {
   import CatmullRomSpline3 from "./math/catmull_rom_spline3";
 
   Cog.Math = {};
-  Cog.Math.Util = MathUtils;
+  Cog.Math.Util = MathUtil;
   Cog.Math.Vector2 = Vector2;
   Cog.Math.Vector3 = Vector3;
   Cog.Math.Vector4 = Vector4;

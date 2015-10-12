@@ -35,6 +35,15 @@ class Node {
     return null;
   }
 
+  remove(node) {
+    let len = this.children.length;
+    this.children = this.children.filter( n => n !== node );
+    if(len === this.children.length) {
+      throw new Error("Node.remove can't remove node " + node.name + "which is not a child node of " + this.name);
+    }
+    return this;
+  }
+
   append(node) {
     this.children.push(node);
     node.parent = this;
@@ -97,13 +106,18 @@ class Node {
   }
 
   unmount(entity) {
-    this.entites = this.entities.filter( (e) => {
+    let len = this.entity.length;
+    this.entity = this.entity.filter( (e) => {
       if(e !== entity) {
         return true;
       }
       entity.unmount(this);
       return false;
     });
+
+    if(len === this.entity.length) {
+      throw new Error("Node.unmount can't unmount entity " + entity.name + "which is not a part of node of " + this.name);
+    }
 
     return this;
   }

@@ -67,6 +67,7 @@ class Buffer {
   }
 
   unbind() { 
+    for(let i = 1; i < 8; i++) { gl.disableVertexAttribArray(i); gl.inc(); }
     gl.bindBuffer(this.target, null); 
     gl.inc();
     this.bound = false;

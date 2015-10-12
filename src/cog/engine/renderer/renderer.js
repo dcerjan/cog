@@ -206,6 +206,7 @@ class DeferredRenderer {
 
 }
 
-let Renderer = new DeferredRenderer(2880, 1800, 0.25);
+let Renderer = new DeferredRenderer(2880, 1800, 0.5);
+//let Renderer = new DeferredRenderer(1920, 1200, 0.5);
 
 export default Renderer;

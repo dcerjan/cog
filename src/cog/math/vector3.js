@@ -1,4 +1,4 @@
-import clamp from "./util";
+import MathUtil from "./util";
 
 class Vector3 {
   constructor(x, y, z) {
@@ -37,7 +37,7 @@ class Vector3 {
   }
 
   lerp(dest, t) {
-    t = clamp(t, 0.0, 1.0);
+    t = MathUtil.clamp(t, 0.0, 1.0);
     let
       oneminust = 1.0 - t,
       x = this.x * oneminust + dest.x * t,
@@ -45,6 +45,10 @@ class Vector3 {
       z = this.z * oneminust + dest.z * t;
 
     return new Vector3(x, y, z);
+  }
+
+  complement() {
+    return new Vector3(-this.x, -this.y, -this.z);
   }
 
   dot(other) {

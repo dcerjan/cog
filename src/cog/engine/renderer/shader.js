@@ -1,4 +1,4 @@
-import gl from "../gl";
+import gl from "./gl";
 
 let compileStageFromSource = (type, source) => {
   let s = gl.createShader((type === 'vertex') ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER); gl.inc();

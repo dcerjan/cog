@@ -1,4 +1,4 @@
-import Mesh from "../mesh/mesh";
+import Mesh from "./mesh";
 import Vector2 from "../../math/vector2";
 import Vector4 from "../../math/vector4";
 

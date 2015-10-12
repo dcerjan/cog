@@ -3,6 +3,7 @@ import React from "react";
 
 
 let Box = Cog.Engine.Renderer.Mesh.Box;
+let Sphere = Cog.Engine.Renderer.Mesh.Sphere;
 let Material = Cog.Engine.Renderer.Material;
 let Prop = Cog.Engine.Scene.Entity.Prop;
 let Node = Cog.Engine.Scene.Graph.Node;
@@ -105,6 +106,10 @@ class MyScene extends Cog.Engine.Scene {
   setup() {
     this.box = new Prop("box", new Box(1,1,1), new Material().diffuse.map({id: this.tex}));
     this.env = new Prop("env", new Box(1,1,1, true), new Material().diffuse.map({id: this.tex}));
+    this.skysphere = new Prop("sphere", new Sphere(20.0,24,24, true), new Material().diffuse.map({id: this.tex}));
+    this.sphere = new Prop("sphere", new Sphere(1.0, 24,24), new Material().diffuse.map({id:this.tex}));
+
+    this.graph.root.unmount(this.camera);
 
     this.graph.root
       .append(new Node("envnode")
@@ -113,11 +118,16 @@ class MyScene extends Cog.Engine.Scene {
         .mount(this.env))
       .append(new Node("boxnode")
         .translate(new Vec3(0,0.5,0))
-        .mount(this.box))
+        .mount(this.box)
+        .append(new Node("spherenode")
+          .translate(new Vec3(0,2,0))
+          .mount(this.sphere)))
       .append(new Node("campos")
         .translate(new Vec3(5,5,5))
         .append(new Node("camnode")
-          .mount(this.camera)))
+          .mount(this.camera))
+        .append(new Node("skydome")
+          .mount(this.skysphere)))
       .append(new Node("lightnode")
         .translate(new Vec3(0,3,0))
         .mount(new Light.Point("pl_0", new Color(0.5, 0.5, 1.0), 2.0)));

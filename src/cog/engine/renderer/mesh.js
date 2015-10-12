@@ -1,6 +1,6 @@
-import Buffer from "../buffer/buffer";
-import IndexBuffer from "../buffer/index_buffer";
-import DataBuffer from "../buffer/data_buffer";
+import Buffer from "./buffer";
+import IndexBuffer from "./index_buffer";
+import DataBuffer from "./data_buffer";
 import Vector3 from "../../math/vector3";
 
 class Vertex {
@@ -154,8 +154,8 @@ class Mesh {
       bytesPerVertex = 16; // position is the only required attribute
 
     // determine total byte buffer length
-    normals      && (bytesPerVertex += 4);
-    tangents     && (bytesPerVertex += 4);
+    normals      && (bytesPerVertex += 8);
+    tangents     && (bytesPerVertex += 8);
     colors       && (bytesPerVertex += 4);
     texCoords    && (bytesPerVertex += 8);
     texCoordsAlt && (bytesPerVertex += 8);
@@ -182,20 +182,20 @@ class Mesh {
 
       // store normals as normalized uint8 components
       if(normals) {
-        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 0] = (v.normal.x * 0.5 + 0.5) * 255;
-        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 1] = (v.normal.y * 0.5 + 0.5) * 255;
-        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 2] = (v.normal.z * 0.5 + 0.5) * 255;
-        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 3] = 255;
-        bufferOffset += 4;
+        uint16View[i * (bytesPerVertex / 2) + (bufferOffset / 2) + 0] = (v.normal.x * 0.5 + 0.5) * 65535;
+        uint16View[i * (bytesPerVertex / 2) + (bufferOffset / 2) + 1] = (v.normal.y * 0.5 + 0.5) * 65535;
+        uint16View[i * (bytesPerVertex / 2) + (bufferOffset / 2) + 2] = (v.normal.z * 0.5 + 0.5) * 65535;
+        uint16View[i * (bytesPerVertex / 2) + (bufferOffset / 2) + 3] = 65535;
+        bufferOffset += 8;
       }
 
       // store tangents as normalized uint8 components
       if(tangents) {
-        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 0] = (v.tangent.x * 0.5 + 0.5) * 255;
-        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 1] = (v.tangent.y * 0.5 + 0.5) * 255;
-        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 2] = (v.tangent.z * 0.5 + 0.5) * 255;
-        uint8View[i * (bytesPerVertex / 1) + (bufferOffset / 1) + 3] = 255;
-        bufferOffset += 4;
+        uint16View[i * (bytesPerVertex / 2) + (bufferOffset / 2) + 0] = (v.tangent.x * 0.5 + 0.5) * 65535;
+        uint16View[i * (bytesPerVertex / 2) + (bufferOffset / 2) + 1] = (v.tangent.y * 0.5 + 0.5) * 65535;
+        uint16View[i * (bytesPerVertex / 2) + (bufferOffset / 2) + 2] = (v.tangent.z * 0.5 + 0.5) * 65535;
+        uint16View[i * (bytesPerVertex / 2) + (bufferOffset / 2) + 3] = 65535;
+        bufferOffset += 8;
       }
 
       // store colors as uint8 components
@@ -246,13 +246,13 @@ class Mesh {
     bufferOffset += 16;
 
     if(normals) {
-      this.data.pointer(1, 4, Buffer.DataType.UnsignedByte, true, bytesPerVertex, bufferOffset);
-      bufferOffset += 4 ;
+      this.data.pointer(1, 4, Buffer.DataType.UnsignedShort, true, bytesPerVertex, bufferOffset);
+      bufferOffset += 8 ;
     }
 
     if(tangents) {
-      this.data.pointer(2, 4, Buffer.DataType.UnsignedByte, true, bytesPerVertex, bufferOffset);
-      bufferOffset += 4;
+      this.data.pointer(2, 4, Buffer.DataType.UnsignedShort, true, bytesPerVertex, bufferOffset);
+      bufferOffset += 8;
     }
     
     if(colors) {

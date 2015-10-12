@@ -11,8 +11,8 @@ uniform sampler2D   fSpecular;
 //uniform samplerCube fEnvironment;
 
 
-const vec3 light        = vec3(-1.0, 1.0, -4.0);
-const vec3 attenuation  = vec3(0.0, 0.008, 0.03);
+const vec3 light        = vec3(-2.0, 0.5, -4.0);
+const vec3 attenuation  = vec3(0.0, 0.008, 0.04);
 const vec4 color        = vec4(1.0);
 
 
