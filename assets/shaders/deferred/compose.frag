@@ -27,10 +27,10 @@ void main() {
 
   vec4 col = vec4(0.0, 0.0, 0.0, 1.0);
 
-  float x = sNormal.x * 2.0 - 1.0;
-  float y = sNormal.y * 2.0 - 1.0;
+  float x = sNormal.x;
+  float y = sNormal.y;
   float z = sqrt(1.0 - x*x - y*y);
-  vec3 normal = vec3(x, y, z);
+  vec3 normal = normalize(vec3(x, y, z));
         
   vec3 lightDir = sPosition.xyz - light;
   float distance = length(lightDir);
@@ -43,9 +43,9 @@ void main() {
     vec3 vertToEye = -normalize(sPosition.xyz);
     vec3 lightReflect = normalize(reflect(-lightDir, normal));
     float specularFactor = dot(vertToEye, lightReflect);
-    specularFactor = pow(specularFactor, sSpecular.a * 256.0);
+    specularFactor = pow(specularFactor, sSpecular.a * 255.0);
     if(specularFactor > 0.0) {
-      col += vec4( (sNormal.a * 2.0 - 1.0) * specularFactor * sSpecular.rgb, 1.0);
+      col += vec4(sNormal.a * 64.0 * specularFactor * sSpecular.rgb, 1.0);
     }
   }
 

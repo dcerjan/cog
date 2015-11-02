@@ -1,5 +1,5 @@
 import Vector4 from "../../math/vector4";
-//import Renderer from "../renderer/renderer";
+import * as MathUtil from "../../math/util";
 
 class Material {
   constructor(name) {
@@ -8,24 +8,24 @@ class Material {
     this.castShadow = true;
 
     this.ambient = {
-      color: (color) => { this.ambient._color = color; return this; }, _color: new Vector4(0.0, 0.0, 0.0, 0.0),
+      color: (color) => { this.ambient._color = new Vector4(color.r, color.g, color.b, color.a); return this; }, _color: new Vector4(0.0, 0.0, 0.0, 0.0),
       intensity: (intensity) => { this.ambient._intensity = intensity; return this; }, _intensity: 0.0,
       occlusion: {
         map: (map) => { this.ambient.occlusion._map = map; return this; }, _map: null,
-        intensity: (intensity) => { this.ambient.occlusion._intensity = intensity; return this; }, _intensity: 0.0
+        intensity: (intensity) => { this.ambient.occlusion._intensity = MathUtil.clamp(intensity, 0.0, 2.0); return this; }, _intensity: 0.0
       }
     };
 
     this.diffuse = {
-      color: (color) => { this.diffuse._color = color; return this; }, _color: new Vector4(0.25, 0.25, 0.25, 1.0),
-      intensity: (intensity) => { this.diffuse._intensity = intensity; return this; }, _intensity: 1.0,
+      color: (color) => { this.diffuse._color = new Vector4(color.r, color.g, color.b, color.a); return this; }, _color: new Vector4(0.25, 0.25, 0.25, 1.0),
+      intensity: (intensity) => { this.diffuse._intensity = MathUtil.clamp(intensity, 0.0, 2.0); return this; }, _intensity: 1.0,
       map: (map) => { this.diffuse._map = map; return this; }, _map: null,
     };
 
     this.specular = {
-      color: (color) => { this.specular._color = color; return this; }, _color: new Vector4(0.2, 0.4, 0.7, 1.0),
-      intensity: (intensity) => { this.specular._intensity = intensity; return this; }, _intensity: 1.0,
-      hardness: (hardness) => { this.specular._hardness = hardness; return this; }, _hardness: 1,
+      color: (color) => { this.specular._color = new Vector4(color.r, color.g, color.b, color.a); return this; }, _color: new Vector4(0.2, 0.4, 0.7, 1.0),
+      intensity: (intensity) => { this.specular._intensity = MathUtil.clamp(intensity, 0.0, 2.0); return this; }, _intensity: 1.0,
+      hardness: (hardness) => { this.specular._hardness = MathUtil.clamp(hardness, 0.0, 64.0); return this; }, _hardness: 1,
       map: (map) => { this.specular._map = map; return this; }, _map: null,
     };
 
@@ -40,20 +40,20 @@ class Material {
     };
 
     this.environment = {
-      color: (color) => { this.environment._color = color; return this; }, _color: new Vector4(0.0, 0.0, 0.0, 0.0),
-      intensity: (intensity) => { this.environment._intensity = intensity; return this; }, _intensity: 0.0,
+      color: (color) => { this.environment._color = new Vector4(color.r, color.g, color.b, color.a); return this; }, _color: new Vector4(0.0, 0.0, 0.0, 0.0),
+      intensity: (intensity) => { this.environment._intensity = MathUtil.clamp(intensity, 0.0, 2.0); return this; }, _intensity: 0.0,
       map: (map) => { this.environment._map = map; return this; }, _map: null
     };
 
     this.detail = {
-      color: (color) => { this.detail._color = color; return this; }, _color: new Vector4(0.0, 0.0, 0.0, 0.0),
-      intensity: (intensity) => { this.detail._intensity = intensity; return this; }, _intensity: 0.0,
+      color: (color) => { this.detail._color = new Vector4(color.r, color.g, color.b, color.a); return this; }, _color: new Vector4(0.0, 0.0, 0.0, 0.0),
+      intensity: (intensity) => { this.detail._intensity = MathUtil.clamp(intensity, 0.0, 2.0); return this; }, _intensity: 0.0,
       map: (map) => { this.detail._map = map; return this; }, _map: null
     };
   
     this.glow = {
-      color: (color) => { this.glow._color = color; return this; }, _color: new Vector4(0.0, 0.0, 0.0, 0.0),
-      intensity: (intensity) => { this.glow._intensity = intensity; return this; }, _intensity: 0.0,
+      color: (color) => { this.glow._color = new Vector4(color.r, color.g, color.b, color.a); return this; }, _color: new Vector4(0.0, 0.0, 0.0, 0.0),
+      intensity: (intensity) => { this.glow._intensity = MathUtil.clamp(intensity, 0.0, 2.0); return this; }, _intensity: 0.0,
       map: (map) => { this.glow._map = map; return this; }, _map: null
     };
   }

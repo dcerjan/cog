@@ -115,10 +115,8 @@ void main(void) {
 
     if(mHasNormalMap == 1) {
       N = TBN * (texture2D(uNormalMap, fTexCoord.xy)).xyz;
-    } else {
-      //N = TBN * N;
     }
-    gl_FragData[1] = vec4(N.xy * 0.5 + 0.5, height, uSpecularIntensity);
+    gl_FragData[1] = vec4(N.xy, height, (clamp(uSpecularIntensity, 0.0, 2.0) * 127.0));
   
   // ============================================================== //
   // =  Diffuse + Detail + Ambient Occlusion + Diffuse Intensity  = //
@@ -127,33 +125,37 @@ void main(void) {
     float ao = 1.0; // neutral factor for ambient occlusion multiplication
 
     if(mHasDetailMap == 1) {
-      detail = texture2D(uDetailMap, fTexCoord.xy) * uDetailColor * uDetailIntensity;
+      detail = texture2D(uDetailMap, fTexCoord.xy) * uDetailColor * (clamp(uDetailIntensity, 0.0, 2.0) * 127.0);
     }
 
     if(mHasAmbientOcclusionMap == 1) {
-      ao = texture2D(uAmbientOcclusionMap, fTexCoord.xy).r * uAmbientOcclusionIntensity;
+      ao = texture2D(uAmbientOcclusionMap, fTexCoord.xy).r * (clamp(uAmbientOcclusionIntensity, 0.0, 2.0) * 127.0);
     }
 
     if(mHasDiffuseMap == 1) {
-      gl_FragData[2] = uAmbientColor + vec4( overlay(texture2D(uDiffuseMap, fTexCoord.xy) * uDiffuseColor, detail).rgb, uDiffuseIntensity) * ao;
+      gl_FragData[2] = uAmbientColor + vec4( 
+        overlay(texture2D(uDiffuseMap, fTexCoord.xy) * uDiffuseColor, detail).rgb, 
+        (clamp(uDiffuseIntensity, 0.0, 2.0) * 127.0)) * ao;
     } else {
-      gl_FragData[2] = uAmbientColor + vec4( overlay(uDiffuseColor, detail).rgb, uDiffuseIntensity) * ao;
+      gl_FragData[2] = uAmbientColor + vec4( 
+        overlay(uDiffuseColor, detail).rgb, 
+        (clamp(uDiffuseIntensity, 0.0, 2.0) * 127.0)) * ao;
     }
 
   // ================================== //
   // =  Specular + Specular Hardness  = //
   // ================================== //
     if(mHasSpecularMap == 1) {
-      gl_FragData[3] = vec4(texture2D(uSpecularMap, fTexCoord.xy).rgb * uSpecularColor.rgb, uSpecularHardness);
+      gl_FragData[3] = vec4(texture2D(uSpecularMap, fTexCoord.xy).rgb * uSpecularColor.rgb, (clamp(uSpecularHardness, 0.0, 64.0) * 3.98));
     } else {
-      gl_FragData[3] = vec4(uSpecularColor.rgb, uSpecularHardness);
+      gl_FragData[3] = vec4(uSpecularColor.rgb, (clamp(uSpecularHardness, 0.0, 64.0) * 3.98));
     }
 
   // =========================== //
   // =  Glow + Glow Intensity  = //
   // =========================== //
     if(mHasGlowMap == 1) {
-      gl_FragData[4] = vec4(texture2D(uGlowMap, fTexCoord.xy).rgb * uGlowColor.rgb, uGlowIntensity);
+      gl_FragData[4] = vec4(texture2D(uGlowMap, fTexCoord.xy).rgb * uGlowColor.rgb, (clamp(uGlowIntensity, 0.0, 2.0) * 127.0));
     } else {
       gl_FragData[4] = vec4(0.0);
     }
@@ -162,7 +164,7 @@ void main(void) {
   // =  Environment + Environment Intensity  = //
   // ========================================= //
     if(mHasEnvironmentMap == 1) {
-      gl_FragData[5] = vec4(1.0); //vec4( (textureCube(uEnvironemntMap, N)).rgb, uEnvironmentIntensity);
+      gl_FragData[5] = vec4(1.0); //vec4( (textureCube(uEnvironemntMap, N)).rgb, (clamp(uEnvironmentIntensity, 0.0, 2.0) * 127.0));
     } else {
       gl_FragData[5] = vec4(0.0);
     }

@@ -106,8 +106,17 @@ class MyScene extends Cog.Engine.Scene {
   setup() {
     this.box = new Prop("box", new Box(1,1,1), new Material().diffuse.map({id: this.tex}));
     this.env = new Prop("env", new Box(1,1,1, true), new Material().diffuse.map({id: this.tex}));
-    this.skysphere = new Prop("sphere", new Sphere(20.0,24,24, true), new Material().diffuse.map({id: this.tex}));
-    this.sphere = new Prop("sphere", new Sphere(1.0, 24,24), new Material().diffuse.map({id:this.tex}));
+    this.skysphere = new Prop("sphere", new Sphere(20.0,32,32, true), new Material().diffuse.map({id: this.tex}));
+    
+    this.sphere = new Prop(
+      "sphere", 
+      new Sphere(1.0, 32,32), 
+      new Material()
+        .diffuse.map({id:this.tex})
+        .diffuse.intensity(1.0)
+        .specular.intensity(0.1)
+        .specular.hardness(60.0)
+        .specular.color(new Color(1.0, 1.0, 1.0, 1.0)));
 
     this.graph.root.unmount(this.camera);
 

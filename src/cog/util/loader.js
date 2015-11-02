@@ -7,26 +7,20 @@ class Loader {
   }
 
   load(resources, afterOne, afterAll) {
-    let loaded = 0;
-
-    resources.map( (resource) => {
+    Promise.all( resources.map( (resource) => 
       Ajax.get({
-        url: this.url + "/" + resource,
-        success: (data) => {
-          this.assets[resource] = data;
-          if(afterOne) { afterOne(resource, data); }
-        },
-        fail: () => {
-          console.error("Unable to fetch data for " + resource);
-          if(afterOne) { afterOne(resource, null); }
-        },
-        done: () => {
-          loaded++;
-          if(loaded === resources.length) {
-            afterAll();
-          }
-        }
-      });
+        url: this.url + "/" + resource
+      }).catch( (reason) => {
+        console.error(reason);
+        if(afterOne) { afterOne(resource, null); }
+      }).then( (data) => {
+        this.assets[resource] = data;
+        if(afterOne) { afterOne(resource, data); }
+      })
+    )).then( (data) => { 
+      if(afterAll) { 
+        afterAll(); 
+      }
     });
   }
 

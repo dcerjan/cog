@@ -13,6 +13,7 @@ let sphere = (radius, stacks, slices, insideNormals = false) => {
   let mesh = new Mesh(Mesh.Type.Static);
 
   let
+    t = Date.now(),
     i, j,
     v, h, r;
 
@@ -22,10 +23,10 @@ let sphere = (radius, stacks, slices, insideNormals = false) => {
 
   // spherical uv coordinates
   let
-    // tu = (n) => (Math.asin(n.x) / Math.PI + 0.5),
-    // tv = (n) => (Math.asin(n.y) / Math.PI + 0.5);
-    tu = (n) => n.x/2 + 0.5,
-    tv = (n) => n.y/2 + 0.5;
+    tu = (n) => (Math.asin(n.x) / Math.PI + 0.5),
+    tv = (n) => (Math.asin(n.y) / Math.PI + 0.5);
+    //tu = (n) => n.x/2 + 0.5,
+    //tv = (n) => n.y/2 + 0.5;
 
   // elevation [0,90] deg
   for(i = 0; i < v; ++i) {
@@ -93,9 +94,9 @@ let sphere = (radius, stacks, slices, insideNormals = false) => {
       p.indices[2] = tmp;
     });  
   }
-  
+
   //mesh.calcNormals();
-  mesh.calcTangents();
+  //mesh.calcTangents();
 
   mesh.compile();
 
