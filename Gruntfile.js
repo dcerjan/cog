@@ -108,4 +108,5 @@ module.exports = function(grunt) {
   
   grunt.registerTask("test", ["shell:mocha"]);
   grunt.registerTask("start", ["sass", "babel", "concurrent"]);
+  grunt.registerTask("build", ["sass", "babel"]);
 };
